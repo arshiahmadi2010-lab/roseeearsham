@@ -336,7 +336,7 @@ s.parts=s.parts.map(a=>arr(a).filter(p=>p&&OKID(p.id)&&fin(p.s)&&fin(p.e)&&+p.s>
 const pids=new Set(s.parts.flat().map(p=>p.id)),cids=new Set(s.courses.map(c=>c.id)),as=v=>({c:v.c,tp:OKID(v.tp)?v.tp:'',n:cut(v.n,300)});
 const tpl={};Object.keys(s.tpl||{}).forEach(k=>{const v=s.tpl[k];if(pids.has(k)&&v&&cids.has(v.c))tpl[k]=as(v)});s.tpl=tpl;
 const ov={};Object.keys(s.ov||{}).forEach(k=>{const[d,p]=k.split('|');if(!OKDATE(d)||!pids.has(p))return;const v=s.ov[k];ov[k]=v&&cids.has(v.c)?as(v):0});s.ov=ov;
-s.logs=arr(s.logs).filter(l=>l&&OKID(l.id)&&OKDATE(l.date)&&fin(l.min)).map(l=>{const o={id:l.id,date:l.date,c:OKID(l.c)?l.c:'',tp:OKID(l.tp)?l.tp:'',min:+l.min,src:cut(l.src,20)};if(OKID(l.part))o.part=l.part;if(fin(l.h))o.h=+l.h;return o});
+s.logs=arr(s.logs).filter(l=>l&&OKID(l.id)&&OKDATE(l.date)&&fin(l.min)).map(l=>{const o={id:l.id,date:l.date,c:OKID(l.c)?l.c:'',tp:OKID(l.tp)?l.tp:'',min:+l.min,src:cut(l.src,20)};if(OKID(l.part))o.part=l.part;if(fin(l.h))o.h=+l.h;if(l.mode==='actual'||l.mode==='full')o.mode=l.mode;return o});
 s.timeEntries=arr(s.timeEntries).filter(x=>x&&OKID(x.id)&&OKDATE(x.date)&&OKID(x.part)&&fin(x.seconds)&&+x.seconds>0).map(x=>({id:x.id,date:x.date,part:x.part,seconds:+x.seconds,method:x.method=='timer'?'timer':'manual',createdAt:+x.createdAt||0,logId:OKID(x.logId)?x.logId:''}));
 const t=s.activeTimer;
 if(t&&OKID(t.part)&&OKDATE(t.date)){const sa=fin(t.startedAt)&&+t.startedAt>0?+t.startedAt:null;s.activeTimer={date:t.date,part:t.part,elapsedSec:Math.max(0,+t.elapsedSec||0),startedAt:t.running&&sa?sa:null,running:!!t.running&&!!sa,h:fin(t.h)?+t.h:null}}else s.activeTimer=null;
@@ -377,7 +377,7 @@ const doneLog=(d,pid)=>S.logs.find(l=>l.src=='part'&&l.part==pid&&l.date==d);
 const partTimeEntries=(d,pid)=>S.timeEntries.filter(x=>x.date==d&&x.part==pid);
 const partTimeSeconds=(d,pid)=>partTimeEntries(d,pid).reduce((n,x)=>n+(+x.seconds||0),0);
 /* جلوگیری از شمارش دوباره: دقایق لاگ «انجام شد» = طول پارت منهای زمان‌های ثبت‌شده */
-function syncPartLog(d,pid){const l=S.logs.find(x=>x.src=='part'&&x.part==pid&&x.date==d),p=findPart(pid);if(!l||!p)return;l.min=Math.max(0,(p.e-p.s)-partTimeSeconds(d,pid)/60)}
+function syncPartLog(d,pid){const l=S.logs.find(x=>x.src=='part'&&x.part==pid&&x.date==d),p=findPart(pid);if(!l||!p)return;l.min=l.mode==='actual'?0:Math.max(0,(p.e-p.s)-partTimeSeconds(d,pid)/60)}
 const timerSeconds=()=>{const t=S.activeTimer;if(!t)return 0;return Math.max(0,Math.floor((+t.elapsedSec||0)+(t.running&&t.startedAt?(Date.now()-t.startedAt)/1000:0)))};
 const clockText=n=>{n=Math.max(0,Math.floor(n));return [~~(n/3600),~~(n%3600/60),n%60].map(x=>String(x).padStart(2,'0')).join(':')};
 const timerCourse=()=>{const t=S.activeTimer,p=t&&findPart(t.part),a=t&&p&&asg(t.date,p);return a?cname(a.c):'مطالعه آزاد'};
@@ -686,7 +686,7 @@ const leaveFS=()=>{if(DESK)return;try{if(document.fullscreenElement)document.exi
 const A={
 go(){V=D.v;OC=null;ANIM=true;try{if(location.hash.slice(1)!=V)location.hash=V}catch(e){}render();scrollTo(0,0)},
 pday(){CD=D.d;render()},wk(){CD=addD(CD,7*+D.k);render()},tod(){CD=today();render()},
-ptick(){if(D.date>today())return toast('برای روزهای آینده نمی‌شود تیک زد.');const p=findPart(D.pid),l=doneLog(D.date,D.pid),b=minOn(today());if(l)S.logs=S.logs.filter(x=>x!==l);else{const a=asg(D.date,p);if(!a)return;S.logs.push({id:uid(),date:D.date,c:a.c,tp:a.tp,min:p.e-p.s,src:'part',part:p.id,h:~~(p.s/60)});syncPartLog(D.date,p.id);LT=D.date+'|'+p.id}save();render();LT='';goalHit(b)},
+ptick(){if(D.date>today())return toast('برای روزهای آینده نمی‌شود تیک زد.');const p=findPart(D.pid),l=doneLog(D.date,D.pid),b=minOn(today());if(l){S.logs=S.logs.filter(x=>x!==l);save();render();goalHit(b);return}const a=asg(D.date,p);if(!a)return;const sec=partTimeSeconds(D.date,D.pid);if(sec>0){M={date:D.date,pid:D.pid,t:'نحوه محاسبه زمان پارت',b:`<p class="muted sm">برای این پارت ${fsec(sec)} زمان ثبت شده. زمان این پارت در آمار چطور محاسبه شود؟</p><div class="time-choice"><button data-a=ptickApply data-mode=full><span class=tc-icon>◷</span><b>زمان کامل پارت</b><small>${fmin(p.e-p.s)} در آمار ثبت شود؛ حتی اگر زمان ثبت‌شده کمتر باشد.</small></button><button data-a=ptickApply data-mode=actual><span class=tc-icon>✓</span><b>فقط زمان واقعی ثبت‌شده</b><small>${fsec(sec)} در آمار محاسبه شود.</small></button></div>`};render();return}A.ptickApply('full')},ptickApply(mode){const date=M?.date||D.date,pid=M?.pid||D.pid,p=findPart(pid),a=asg(date,p),b=minOn(today());if(!p||!a)return;const l={id:uid(),date,c:a.c,tp:a.tp,min:mode==='actual'?0:p.e-p.s,src:'part',part:p.id,h:~~(p.s/60),mode};S.logs.push(l);syncPartLog(date,pid);M=null;LT=date+'|'+pid;save();render();LT='';goalHit(b)},
 editp(){partForm(D.date,D.pid)},
 timeMenu(){timeMenu(D.date,D.pid)},
 chooseManual(){const d=M.date,pid=M.pid;M=null;manualTimeForm(d,pid)},
