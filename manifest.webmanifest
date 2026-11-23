@@ -1,0 +1,22 @@
+{
+  "id": "/",
+  "name": "پلنر کنکور",
+  "short_name": "پلنر",
+  "description": "برنامه‌ریز مطالعه و پیگیری کارها",
+  "lang": "fa",
+  "dir": "rtl",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#eaf2ff",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
