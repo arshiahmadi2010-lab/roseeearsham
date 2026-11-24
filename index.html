@@ -839,14 +839,18 @@ if ('serviceWorker' in navigator) {
         const reg = await navigator.serviceWorker.register('/sw.js');
         updateReg = reg;
         if (reg.waiting && navigator.serviceWorker.controller) showUpdatePrompt(reg);
-        reg.addEventListener('updatefound', () => {
+        const watchInstallingWorker = () => {
           const worker = reg.installing;
-          if (!worker) return;
+          if (!worker || worker.__plannerUpdateWatched) return;
+          worker.__plannerUpdateWatched = true;
           worker.addEventListener('statechange', () => {
             if (worker.state === 'installed' && navigator.serviceWorker.controller) showUpdatePrompt(reg);
           });
-        });
+        };
+        reg.addEventListener('updatefound', watchInstallingWorker);
+        watchInstallingWorker();
         await reg.update();
+        if (reg.waiting && navigator.serviceWorker.controller) showUpdatePrompt(reg);
       } catch (err) {
         console.warn('PWA update check:', err);
       }
