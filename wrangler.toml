@@ -1,0 +1,7 @@
+name = "planner-arshia-test"
+compatibility_date = "2026-11-24"
+pages_build_output_dir = "."
+
+[[kv_namespaces]]
+binding = "BACKUPS"
+id = "e9474d619d2c4fda9ebf15fd7cc180ee"
