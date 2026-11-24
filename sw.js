@@ -1,5 +1,5 @@
-// Update release: 2026-11-24-poster-redesign-final2
-const CACHE='planner-pwa-v9';
+// Update release: 2026-11-24-poster-redesign-update-fix
+const CACHE='planner-pwa-v10';
 const CORE=['/','/index.html','/manifest.webmanifest','/icon.svg'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE))));
 self.addEventListener('message',e=>{if(e.data&&e.data.type==='SKIP_WAITING')self.skipWaiting();});
