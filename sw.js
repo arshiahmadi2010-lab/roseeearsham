@@ -1,5 +1,5 @@
-// Update release: 2026-11-25-cloud-sync-conflict-fix-v19
-const CACHE='planner-pwa-v19';
+// Update release: 2026-11-25-timer-cancel-fullscreen-fix-v20
+const CACHE='planner-pwa-v20';
 const CORE=['/','/index.html','/manifest.webmanifest','/icon.svg'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE))));
 self.addEventListener('message',e=>{if(e.data&&e.data.type==='SKIP_WAITING')self.skipWaiting();});
