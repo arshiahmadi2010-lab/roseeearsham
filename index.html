@@ -47,6 +47,22 @@
 body{background-color:var(--bg);background-image:radial-gradient(ellipse at 12% 0%,color-mix(in srgb,var(--accent) 10%,transparent),transparent 42%),radial-gradient(ellipse at 95% 28%,color-mix(in srgb,var(--accent2,var(--accent)) 7%,transparent),transparent 38%);background-attachment:fixed}
 .card{background:color-mix(in srgb,var(--surface) 96%,var(--accent) 4%)}
 @media(max-width:380px){.theme-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style><style>
+/* Full-app visual refinement */
+.home-actions{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:8px;margin:12px 0 16px}.home-actions .btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 7px;font-size:13px;min-height:46px}
+.next{border-radius:22px!important;padding:18px!important;box-shadow:var(--shadow)}
+.stats-heading{margin:12px 0}.stats-period{display:flex;gap:7px;overflow-x:auto;padding:10px 2px 2px;scrollbar-width:none}.stats-period .chip{white-space:nowrap;flex:none}
+.card{transition:transform .16s ease,border-color .16s ease}.card h2{letter-spacing:-.2px}
+.time-screen{justify-content:flex-start;gap:12px;padding:calc(18px + env(safe-area-inset-top,0px)) max(18px,env(safe-area-inset-right,0px)) calc(18px + env(safe-area-inset-bottom,0px))}
+.timer-top{width:min(100%,720px);flex:none}.timer-center{width:min(100%,720px);flex:1;padding:18px 12px}.timer-center::before{inset:2% 0;border-radius:32px}
+.timer-subject{font-size:clamp(21px,5vw,32px);margin:10px 0 2px}.timer-part{font-size:13px}
+.timer-digits{font-size:clamp(58px,14vw,100px);margin:18px 0 12px;padding:12px clamp(20px,5vw,44px) 15px;font-weight:400;letter-spacing:-2px}
+.timer-glass{margin-top:10px;padding:12px 18px;width:min(100%,430px)}.timer-controls{margin-top:18px;gap:9px;width:min(100%,430px)}.timer-main{flex:1;min-width:0;padding:14px 18px}.timer-finish{padding:13px 16px}.timer-bottom{display:none}
+.desk{padding:calc(12px + env(safe-area-inset-top,0px)) max(18px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px))}
+.dk-top,.dk-bot{max-width:1100px}.dk-mid{max-width:1100px;gap:clamp(12px,3vh,28px)}.dk-info{max-width:620px}.dk-bot{gap:10px}.dk-btn{min-height:50px}
+@media(orientation:landscape){.desk{padding:calc(8px + env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px))}.dk-top{max-width:100%;flex:none}.dk-mid{flex-direction:row;justify-content:center;gap:clamp(24px,6vw,90px);max-width:100%;min-height:0}.dk-mid>.dk-flip,.dk-mid>.dk-an{flex:0 1 48%;width:min(48vw,66vh);max-height:66vh}.dkc{font-size:min(16vw,34vh,170px)}.dk-flip b{font-size:min(10vw,22vh,100px)}.dk-info{flex:0 1 42%;text-align:right}.dk-bar{margin:0;width:100%;max-width:440px}.dk-bot{flex:none;max-width:100%}}
+@media(max-height:430px) and (orientation:landscape){.dkc{font-size:min(14vw,30vh,125px)}.dk-an{width:min(38vh,38vw)!important;max-height:52vh}.dk-part{font-size:20px}.dk-sub{margin:2px 0 7px}.dk-btn{padding:9px 22px;min-height:40px}}
+@media(max-width:420px){.home-actions{grid-template-columns:1fr 1fr}.home-actions .btn:first-child{grid-column:1/-1}.timer-controls{flex-direction:column}.timer-main,.timer-finish{width:100%}}
 </style></head><body>
 <style>
 /* فونت: برای کم‌حجم ماندن فایل، از نسخهٔ نصب‌شده یا CDN استفاده می‌شود؛ در نبود اینترنت Tahoma جایگزین است. */
@@ -397,7 +413,7 @@ function swapAcross(dA,a,dB,b){const A=asg(dA,findPart(a)),B=asg(dB,findPart(b))
 const sw=o=>{if(o.date==dA&&o.part==a){o.date=dB;o.part=b}else if(o.date==dB&&o.part==b){o.date=dA;o.part=a}};
 S.logs.forEach(sw);S.timeEntries.forEach(sw);
 [[dA,a],[dB,b]].forEach(([d,pid])=>{const p=findPart(pid),n=p&&asg(d,p);S.logs.forEach(l=>{if(l.date==d&&l.part==pid){l.c=n?n.c:'';l.tp=n?n.tp:'';if(l.src=='part'||l.src=='manual-time')l.h=~~(p.s/60)}});syncPartLog(d,pid)})}
-let M=null,D={},V='home',OC=null,CD=today(),PS='w',PMo=null,PYr=null,SD=null,SPD=wd(today()),PERR='',PVm='l',TSCREEN=false,WL=null,LT='',ANIM=true,FIRST=true,CEL='',DESK=false,DESKN=0,FOCUS_PID=null;
+let M=null,D={},V='home',OC=null,CD=today(),STPER='30',PS='w',PMo=null,PYr=null,SD=null,SPD=wd(today()),PERR='',PVm='l',TSCREEN=false,WL=null,LT='',ANIM=true,FIRST=true,CEL='',DESK=false,DESKN=0,FOCUS_PID=null;
 const err=m=>{const e=$('#merr');if(e)e.textContent=m;return false};
 async function wake(){try{if(!WL&&(DESK||(TSCREEN&&S.activeTimer&&S.activeTimer.running))&&navigator.wakeLock){WL=await navigator.wakeLock.request('screen');WL.addEventListener('release',()=>{WL=null})}}catch(e){WL=null}}
 function relWake(){try{if(WL){WL.release();WL=null}}catch(e){WL=null}}
@@ -520,6 +536,18 @@ return`<h1>آمار و تحلیل عملکرد</h1>
 <div class=card><h2>سهم درس‌ها در ۳۰ روز اخیر</h2>${keys.map(k=>`<div class=row><span class=grow>${esc(cname(k))}</span><span class="muted sm">${fmin(per[k])} · ${fa(total30?Math.round(per[k]/total30*100):0)}٪</span></div><div class=bar><i style="width:${total30?per[k]/total30*100:0}%;background:${ccol(k)}"></i></div>`).join('')||'<p class=muted>هنوز مطالعه‌ای ثبت نشده.</p>'}</div>
 <div class=card><h2>الگوی روزهای هفته</h2>${DAYS.map((n,i)=>`<div class=row><span style="width:64px">${n}</span><div class="bar grow"><i style="width:${weekday[i]/Math.max(1,...weekday)*100}%"></i></div><span class="muted sm" style="width:58px;text-align:end">${weekday[i]?fh(weekday[i]):'—'}</span></div>`).join('')}</div>
 <div class=grid2><div class=card><div class="muted sm">بهترین روز ثبت‌شده</div><b>${best?fj(best[0],1):'—'}</b><div class="muted sm">${best?fmin(best[1]):'هنوز داده‌ای نیست'}</div></div><div class=card><div class="muted sm">پربازده‌ترین ساعت شروع</div><b>${bh!=null?fa(bh)+':۰۰':'—'}</b><div class="muted sm">بر اساس ساعت شروع پارت یا تایمر</div></div></div>`}
+const statsVBase=statsV;
+function statsV(){
+ const allLogs=S.logs,allEntries=S.timeEntries;
+ const days=STPER==='all'?0:+STPER,from=days?addD(today(),1-days):'';
+ if(days){S.logs=allLogs.filter(x=>x.date>=from&&x.date<=today());S.timeEntries=allEntries.filter(x=>x.date>=from&&x.date<=today())}
+ try{
+  const body=statsVBase();
+  const opts=[['7','۷ روز'],['30','۳۰ روز'],['90','۹۰ روز'],['365','یک سال'],['all','همه‌ی سوابق']];
+  const bar='<div class="card"><div class="row"><b class=grow>بازه‌ی تحلیل</b><span class=tag>'+ (STPER==='all'?'تمام سوابق':'از '+fj(from,1)+' تا امروز') +'</span></div><div class=stats-period>'+opts.map(([k,n])=>'<button class="chip '+(STPER===k?'on':'')+'" data-a=statsPeriod data-k='+k+'>'+n+'</button>').join('')+'</div><p class="muted sm">آمار این صفحه بر اساس بازه‌ی انتخابی محاسبه می‌شود؛ سوابق اصلی بدون تغییر باقی می‌مانند.</p></div>';
+  return body.replace('<h1>آمار و تحلیل عملکرد</h1>', '<div class=stats-heading><div><h1>آمار و تحلیل</h1><p class="muted sm">بررسی روند، استمرار و تعادل مطالعه</p></div></div>'+bar);
+ }finally{S.logs=allLogs;S.timeEntries=allEntries}
+}
 function partRow(p,i){return`<div class=prow data-pid=${p.id}><div class=prow-top><span class=prow-ix>${fa(i+1)}</span><input class=prow-name data-pf=name data-pid=${p.id} value="${esc(p.name)}" aria-label="نام پارت"><button class=prow-del data-a=delpart data-pid=${p.id} aria-label="حذف پارت">${ico('trash',16)}</button></div><div class=prow-time><label class=ptf><span>شروع</span><input type=time data-pf=s data-pid=${p.id} value="${tm(p.s)}"></label><span class=prow-sep>تا</span><label class=ptf><span>پایان</span><input type=time data-pf=e data-pid=${p.id} value="${tm(p.e)}"></label></div><div class=prow-dur>${ico('clock',12)}${fmin(p.e-p.s)}</div></div>`}
 function partsCard(){const d=SPD,ps=[...S.parts[d]].sort((a,b)=>a.s-b.s),tot=ps.reduce((s,p)=>s+(p.e-p.s),0);
 return`<div class=card><h2>پارت‌بندی</h2><p class="muted sm">زمان‌هایی که می‌خواهی در آن درس بخوانی را برای هر روز هفته مشخص کن. برنامه‌ات فقط داخل همین پارت‌ها چیده می‌شود.</p><div class=days>${DAYS.map((n,i)=>`<button class="chip${i==d?' on':''}" data-a=spd data-i=${i} aria-label="${n}">${DS[i]}<small>${fa(S.parts[i].length)}</small></button>`).join('')}</div><div class=row style="justify-content:space-between;margin:6px 0 12px"><h2 style="margin:0">${DAYS[d]}</h2>${tot?`<span class=psum>${ico('clock',12)}${fmin(tot)}</span>`:''}</div>${ps.length?ps.map((p,i)=>partRow(p,i)).join(''):'<div class=empty><b>برای این روز پارتی تعریف نشده</b><p class="muted sm">با دکمه‌ی پایین اولین پارت این روز را اضافه کن.</p></div>'}<div id=perr class=err>${PERR}</div><div class=row><button class="btn p" data-a=addpart>${ico('plus',16)}افزودن پارت</button><button class=btn data-a=copyparts>کپی این روز به روزهای دیگر</button></div></div>`}
@@ -609,7 +637,7 @@ function deskV(){const f=S.deskFace||0,night=deskNight(),dp=deskPart(),p=dp.p,a=
 let ticks='';for(let i=0;i<12;i++)ticks+=`<line x1=150 y1=26 x2=150 y2=${i%3?36:44} transform="rotate(${i*30} 150 150)" stroke="rgba(255,255,255,.55)" stroke-width=${i%3?3:5} stroke-linecap=round />`;
 const ring=`<circle cx=150 cy=150 r=140 fill=none stroke="rgba(255,255,255,.1)" stroke-width=${f==2?16:8} /><circle id=dkPr data-c=${CI} cx=150 cy=150 r=140 fill=none stroke="${col}" stroke-width=${f==2?16:8} stroke-linecap=round stroke-dasharray=${CI} stroke-dashoffset=${CI} transform="rotate(-90 150 150)" />`;
 const face=f==0?`<div class=dk-flip><div class=dkc id=dkH></div><b>:</b><div class=dkc id=dkM></div><small id=dkS></small></div>`:f==1?`<svg viewBox="0 0 300 300" class=dk-an>${ring}${ticks}<line id=dkHh x1=150 y1=150 x2=150 y2=98 stroke=#fff stroke-width=8 stroke-linecap=round /><line id=dkHm x1=150 y1=150 x2=150 y2=62 stroke=#fff stroke-width=5 stroke-linecap=round /><line id=dkHs x1=150 y1=165 x2=150 y2=48 stroke="var(--accent)" stroke-width=2.5 stroke-linecap=round /><circle cx=150 cy=150 r=7 fill="var(--accent)" /></svg>`:`<svg viewBox="0 0 300 300" class=dk-an>${ring}<text id=dkT x=150 y=172 text-anchor=middle font-size=64 font-weight=700 fill=currentColor></text></svg>`;
-return`<section class="desk${night?' night':''}" data-pid="${p?p.id:''}" data-night="${night?1:0}"><div class=dk-top><button class=dk-ghost data-a=deskExit>✕ خروج</button><span class=dk-dots>${[0,1,2].map(i=>`<button data-a=deskFace data-i=${i} class="${i==f?'on':''}" aria-label="طرح ${fa(i+1)}"></button>`).join('')}</span><button class=dk-ghost data-a=deskNight>${night?'☀︎ روز':'☾ شب'}</button></div><div class=dk-mid>${face}<div class=dk-info><div class=dk-part>${a?cic(a.c)+' '+esc(cname(a.c)):'پارت فعالی نیست'}</div><div class=dk-sub id=dkSub></div><div class=dk-bar><i id=dkBar></i></div></div></div><div class=dk-bot><button class=dk-btn data-a=deskToggle>${running?'❚❚ توقف':t?'▶ ادامه':'▶ شروع مطالعه'}</button>${t?'<button class=dk-ghost data-a=deskFinish>✓ پایان و ثبت</button>':''}</div></section>`}
+return`<section class="desk${night?' night':''}" data-pid="${p?p.id:''}" data-night="${night?1:0}"><div class=dk-top><button class=dk-ghost data-a=deskExit>✕ خروج</button><span class=dk-dots>${[0,1,2].map(i=>`<button data-a=deskFace data-i=${i} class="${i==f?'on':''}" aria-label="طرح ${fa(i+1)}"></button>`).join('')}</span><button class=dk-ghost data-a=deskRotate>↻ افقی</button><button class=dk-ghost data-a=deskNight>${night?'☀︎ روز':'☾ شب'}</button></div><div class=dk-mid>${face}<div class=dk-info><div class=dk-part>${a?cic(a.c)+' '+esc(cname(a.c)):'پارت فعالی نیست'}</div><div class=dk-sub id=dkSub></div><div class=dk-bar><i id=dkBar></i></div></div></div><div class=dk-bot><button class=dk-btn data-a=deskToggle>${running?'❚❚ توقف':t?'▶ ادامه':'▶ شروع مطالعه'}</button>${t?'<button class=dk-ghost data-a=deskFinish>✓ پایان و ثبت</button>':''}</div></section>`}
 function deskTick(){if(!DESK)return;const root=$('.desk');if(!root)return;const d=new Date(),dp=deskPart(),pid=dp.p?dp.p.id:'';
 if(root.dataset.pid!==pid||root.dataset.night!==(deskNight()?'1':'0'))return render();
 const nm=d.getHours()*60+d.getMinutes(),set=(id,v,fl)=>{const e=$('#'+id);if(!e||e.dataset.v===v)return;const had=e.dataset.v!=null;e.dataset.v=v;e.textContent=v;if(fl&&had){e.classList.remove('fl');void e.offsetWidth;e.classList.add('fl')}};
@@ -690,9 +718,9 @@ timeMenu(){timeMenu(D.date,D.pid)},
 chooseManual(){const d=M.date,pid=M.pid;M=null;manualTimeForm(d,pid)},
 chooseTimer(){const d=M.date,pid=M.pid;if(d!=today())return err('تایمر زنده فقط برای پارت‌های امروز فعال است.');const t=S.activeTimer;if(t&&(t.date!=d||t.part!=pid))return err('یک تایمر دیگر فعال است؛ از نوار تایمر پایین صفحه آن را باز یا لغو کن.');M=null;openTimer(d,pid)},
 startPart(){openTimer(D.date,D.pid)},
-deskOpen(){DESK=true;TSCREEN=false;M=null;try{document.documentElement.requestFullscreen?.().catch(()=>{})}catch(e){}render()},
-deskExit(){DESK=false;render();try{if(document.fullscreenElement)document.exitFullscreen?.().catch(()=>{})}catch(e){}},
-deskNight(){DESKN=deskNight()?2:1;render()},
+deskOpen(){DESK=true;TSCREEN=false;M=null;render();try{const fs=document.documentElement.requestFullscreen?.();if(fs&&typeof fs.then==='function')fs.then(()=>{try{screen.orientation?.lock?.('landscape')?.catch(()=>{})}catch(e){}}).catch(()=>{});else{try{screen.orientation?.lock?.('landscape')?.catch(()=>{})}catch(e){}}}catch(e){}},
+deskExit(){DESK=false;try{screen.orientation?.unlock?.()}catch(e){}render();try{if(document.fullscreenElement)document.exitFullscreen?.().catch(()=>{})}catch(e){}},
+deskNight(){DESKN=deskNight()?2:1;render()},deskRotate(){try{const p=screen.orientation?.lock?.('landscape');if(p&&p.catch)p.catch(()=>toast('چرخش خودکار گوشی را فعال کن و دوباره امتحان کن.'))}catch(e){toast('این مرورگر قفل چرخش را پشتیبانی نمی‌کند؛ چرخش خودکار گوشی را فعال کن.')}},
 deskFace(){S.deskFace=+D.i;save();render()},
 deskToggle(){const t=S.activeTimer;if(!t){const p=deskPart().p;if(!p)return toast('پارتی با درس چیده‌شده برای امروز نیست.');S.activeTimer={date:today(),part:p.id,elapsedSec:0,startedAt:Date.now(),running:true,h:new Date().getHours()}}else if(t.running){t.elapsedSec=timerSeconds();t.running=false;t.startedAt=null}else{t.running=true;t.startedAt=Date.now()}save();render()},
 deskFinish(){A.timerFinish();toast('زمان ثبت شد ✓')},
@@ -717,7 +745,7 @@ timerBgClear(){removeTimerBg().then(()=>{S.timerBg='';save();render()})},
 downloadbk(){const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'}),u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='study-planner-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)},
 importfile(){const f=$('#backupFile');if(f)f.click()},
 mvgo(){const d2=$('#mvd').value,q=$('#mvp').value;if(!q)return err('پارت مقصد را انتخاب کن.');swapAcross(D.date,D.pid,d2,q);M=null;save();render()},
-pv(){PS=D.k;render()},mnav(){let[y,m]=PMo;m+=+D.k;if(m>12){m=1;y++}if(m<1){m=12;y--}PMo=[y,m];SD=null;render()},ynav(){PYr+=+D.k;render()},sday(){SD=D.d;render()},
+statsPeriod(){STPER=D.k;render()},pv(){PS=D.k;render()},mnav(){let[y,m]=PMo;m+=+D.k;if(m>12){m=1;y++}if(m<1){m=12;y--}PMo=[y,m];SD=null;render()},ynav(){PYr+=+D.k;render()},sday(){SD=D.d;render()},
 mlog(){const m=+nd($('#lm').value),c=$('#lc').value,e=$('#lerr');if(D.d>today()){if(e)e.textContent='برای روزهای آینده نمی‌شود ثبت کرد.';return}if(!c){if(e)e.textContent='اول در بخش «درس‌ها» یک درس اضافه کن.';return}if(!(m>0)){if(e)e.textContent='مدت را به دقیقه وارد کن.';return}S.logs.push({id:uid(),date:D.d,c,tp:'',min:m,src:'manual'});save();render()},dlg(){S.logs=S.logs.filter(l=>l.id!=D.id);save();render()},
 opc(){OC=D.id;render();scrollTo(0,0)},bc(){OC=null;render()},newc(){courseForm()},editc(){courseForm(C(D.id))},
 ts(){const p=T_(D.c,D.p);p.st=(p.st+1)%3;save();render()},tw(){const p=T_(D.c,D.p);p.w=p.w%3+1;save();render()},
@@ -758,6 +786,7 @@ addEventListener('hashchange',()=>{const v=location.hash.slice(1);if(v=='timer')
 let DG=null;
 document.addEventListener('pointerdown',e=>{const g=e.target.closest('.gr');if(!g)return;const row=g.closest('.tr');if(!row)return;e.preventDefault();try{g.setPointerCapture(e.pointerId)}catch(x){}row.classList.add('drag');DG={row,y:e.clientY,t:null}});
 document.addEventListener('pointermove',e=>{if(!DG)return;DG.row.style.transform='translateY('+(e.clientY-DG.y)+'px)';let t=null;$$('.tr').forEach(r=>{if(r===DG.row)return;const b=r.getBoundingClientRect(),hit=e.clientY>=b.top&&e.clientY<=b.bottom;r.classList.toggle('over',hit);if(hit)t=r});DG.t=t});
+window.addEventListener('orientationchange',()=>{if(DESK)render()});
 const dend=()=>{if(!DG)return;const d=DG;DG=null;d.row.classList.remove('drag');d.row.style.transform='';$$('.over').forEach(r=>r.classList.remove('over'));if(d.t){swapAcross(d.row.dataset.date,d.row.dataset.pid,d.t.dataset.date,d.t.dataset.pid);save()}render()};
 document.addEventListener('pointerup',dend);document.addEventListener('pointercancel',dend);
 let TS=null;
