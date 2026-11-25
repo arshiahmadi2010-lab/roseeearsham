@@ -90,6 +90,16 @@ main{padding-bottom:8px}
 .timer-progress small{color:rgba(255,255,255,.72);font-size:11px}
 .timer-controls{align-items:stretch}
 @media(max-width:420px){.timer-controls{flex-direction:column}.timer-main,.timer-finish{width:100%}.home-actions .btn{font-size:12px}}
+</style><style>
+/* Home and planning hierarchy */
+.home-actions{margin:12px 0 16px}.home-actions .btn{border-radius:14px;box-shadow:var(--shadow)}
+.days{gap:6px}.days .chip{border-radius:12px;padding-block:8px}
+.wkb{margin:10px 0 4px}.wkb .btn{border-radius:13px;min-height:44px}
+.strip{gap:5px}.sd{border-radius:14px;min-height:66px}
+.plan .card,.wrap.wide .card{border-radius:19px}
+.wrap h1{letter-spacing:-.35px}
+.wrap>main>.card:first-child{margin-top:10px}
+@media(max-width:360px){.home-actions{grid-template-columns:1fr 1fr}.home-actions .btn:last-child{grid-column:1/-1}}
 </style></head><body>
 <style>
 /* فونت: برای کم‌حجم ماندن فایل، از نسخهٔ نصب‌شده یا CDN استفاده می‌شود؛ در نبود اینترنت Tahoma جایگزین است. */
@@ -516,7 +526,7 @@ const und=ps.filter(x=>asg(t,x)&&!doneLog(t,x.id)),np=und.find(x=>nm>=x.s&&nm<x.
 if(na){const act=S.activeTimer&&S.activeTimer.part==np.id&&S.activeTimer.date==t,tp=T_(na.c,na.tp);h+=`<div class=next style="--c:${ccol(na.c)}"><span class=ni>${cic(na.c)}</span><div class=nk>${isc?'پارت جاری':'پارت بعدی'} — ${ftime(np.s)} تا ${ftime(np.e)}${!isc&&np.s>nm?' — '+fmin(np.s-nm)+' دیگر':''}</div><div class=nt>${cic(na.c)} ${esc(cname(na.c))}</div><div class=nk>${tp?esc(tp.name):''}${na.n?(tp?' · ':'')+esc(na.n):''}</div><button class=nbtn data-a=${act?'timerOpen':'startPart'} data-date=${t} data-pid=${np.id}>${act?'ادامهٔ تایمر':'▶ شروع تایمر'}</button></div>`}
 const yd=addD(t,-1),ovr=dayParts(yd).filter(p=>asg(yd,p)&&!doneLog(yd,p.id)),fr=dayParts(t).filter(p=>!asg(t,p)).length;
 if(ovr.length&&fr)h+=`<div class="card row"><div class=grow><b>${fa(ovr.length)} پارت دیروز انجام نشده</b><div class="muted sm">به پارت‌های خالی امروز منتقل شوند؟</div></div><button class="btn p" data-a=moveOver>انتقال به امروز</button></div>`;
-h+=startCard();h+=dayRing(t);
+h+=startCard();h+=dayRing(t);h+='<div class="home-actions"><button class="btn p" data-a=quickStart>▶ شروع مطالعه</button><button class=btn data-a=go data-v=plan>برنامه‌ریزی</button><button class=btn data-a=deskOpen>حالت رومیزی</button></div>';
 if(!S.courses.length)h+=`<div class=card><h2>درس‌هایت را اضافه کن</h2><p class=muted>در بخش «درس‌ها» درس و مبحث‌هایت را بساز، بعد در «برنامه» داخل پارت‌ها بچین.</p><div class=row><button class="btn p" data-a=preset data-k="پایه یازدهم تجربی">افزودن درس‌های یازدهم تجربی</button><button class=btn data-a=go data-v=courses>افزودن دستی</button><button class=btn data-a=demo>بارگذاری داده‌ی نمونه</button></div></div>`;
 h+=`<div class=card><div class=row><h2 class=grow>برنامه‌ی امروز</h2><button class=btn data-a=go data-v=plan>برنامه‌ی هفته</button></div><div style="margin-top:14px">${dayList(t)}</div></div>`;
 h+=`<div class="card row"><button class="btn grow" data-a=deskOpen>🖥️ حالت میز</button><button class="btn grow" data-a=imgToday>🖼️ کارت امروز</button></div>`;
@@ -569,7 +579,7 @@ function statsV(){
  const days=STPER==='all'?0:+STPER,from=days?addD(today(),1-days):'';
  if(days){S.logs=allLogs.filter(x=>x.date>=from&&x.date<=today());S.timeEntries=allEntries.filter(x=>x.date>=from&&x.date<=today())}
  try{
-  const body=statsVBase();
+  let body=statsVBase();if(STPER!=='30'){body=body.replaceAll('۳۰ روز اخیر','بازه‌ی انتخابی').replaceAll('شش ماه اخیر','ماه‌های اخیر')}
   const opts=[['7','۷ روز'],['30','۳۰ روز'],['90','۹۰ روز'],['365','یک سال'],['all','همه‌ی سوابق']];
   const bar='<div class="card"><div class="row"><b class=grow>بازه‌ی تحلیل</b><span class=tag>'+ (STPER==='all'?'تمام سوابق':'از '+fj(from,1)+' تا امروز') +'</span></div><div class=stats-period>'+opts.map(([k,n])=>'<button class="chip '+(STPER===k?'on':'')+'" data-a=statsPeriod data-k='+k+'>'+n+'</button>').join('')+'</div><p class="muted sm">آمار این صفحه بر اساس بازه‌ی انتخابی محاسبه می‌شود؛ سوابق اصلی بدون تغییر باقی می‌مانند.</p></div>';
   return body.replace('<h1>آمار و تحلیل عملکرد</h1>', '<div class=stats-heading><div><h1>آمار و تحلیل</h1><p class="muted sm">بررسی روند، استمرار و تعادل مطالعه</p></div></div>'+bar);
