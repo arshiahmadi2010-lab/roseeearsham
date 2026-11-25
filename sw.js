@@ -1,5 +1,5 @@
-// Update release: 2026-11-25-timer-progress-and-layout-v12
-const CACHE='planner-pwa-v12';
+// Update release: 2026-11-25-home-planning-polish-v13
+const CACHE='planner-pwa-v13';
 const CORE=['/','/index.html','/manifest.webmanifest','/icon.svg'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE))));
 self.addEventListener('message',e=>{if(e.data&&e.data.type==='SKIP_WAITING')self.skipWaiting();});
