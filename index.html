@@ -539,7 +539,7 @@ const yTarget=S.goal*yearDays(y);
 const mx=Math.max(60,...mt),bi=mt.indexOf(Math.max(...mt)),bars=mt.map((v,i)=>{const h=v/mx*90,x=326-i*28;return`<rect class=ba x=${x} y=${110-h} width=22 height=${h} rx=3 /><text class=tx x=${x+11} y=${106-h} text-anchor=middle>${v?fh(v):''}</text><text class=tx x=${x+11} y=124 text-anchor=middle>${fa(i+1)}</text>`}).join('');
 let proj='';if(y==cy&&tot>0){const el=diff(t,isoJ(y,1,1))+1,pj=Math.round(tot/60/el*yearDays(y));proj=`<p>با این روند تا پایان سال حدود <b>${fa(pj)} ساعت</b> می‌خوانی${pj>=yTarget?' و به هدفت می‌رسی.':' و از هدف '+fn(yTarget)+' ساعت کمتر می‌شود.'}</p>`}
 return`<div class=row style="margin:12px 0"><button class=btn data-a=ynav data-k=-1>سال قبل</button><b class=grow style="text-align:center">سال ${fa(y)}</b><button class=btn data-a=ynav data-k=1>سال بعد</button></div><div class=card><button class="btn p" style="width:100%" data-a=imgYear data-y=${y}>🖼️ ساخت پوستر این سال</button></div><div class=card>${gbar('مطالعه‌ی امسال',tot,yTarget)}${proj}<div class=grid2 style="margin:10px 0 0"><div><div class="muted sm">روزهای فعال</div><b>${fa(act)}</b></div><div><div class="muted sm">بلندترین روزهای پیاپی</div><b>${fa(ls)}</b></div><div><div class="muted sm">بهترین ماه</div><b>${tot?MONTHS[bi]:'—'}</b></div></div></div><div class=card><h2>نقشه‌ی روزهای مطالعه</h2>${rows}<p class="muted sm">هر خانه یک روز است و هرچه پررنگ‌تر باشد به هدف روزانه نزدیک‌تری. خانه‌ی کادردار امروز است.</p></div><div class=card><h2>ساعت مطالعه‌ی هر ماه</h2><svg viewBox="0 0 350 130" class=ch role=img aria-label="ساعت مطالعه‌ی هر ماه">${bars}</svg></div>`}
-function statsV(){
+function statsVBase(){
 const t=today(),[jy,jm]=J(t),targets=goalTargets(),ds=[];
 for(let i=6;i>=0;i--){const d=addD(t,-i);ds.push({w:wd(d),a:minOn(d),p:planOn(d),date:d})}
 const inN=(l,n)=>diff(t,l.date)>=0&&diff(t,l.date)<n;
@@ -573,7 +573,6 @@ return`<h1>آمار و تحلیل عملکرد</h1>
 <div class=card><h2>سهم درس‌ها در ۳۰ روز اخیر</h2>${keys.map(k=>`<div class=row><span class=grow>${esc(cname(k))}</span><span class="muted sm">${fmin(per[k])} · ${fa(total30?Math.round(per[k]/total30*100):0)}٪</span></div><div class=bar><i style="width:${total30?per[k]/total30*100:0}%;background:${ccol(k)}"></i></div>`).join('')||'<p class=muted>هنوز مطالعه‌ای ثبت نشده.</p>'}</div>
 <div class=card><h2>الگوی روزهای هفته</h2>${DAYS.map((n,i)=>`<div class=row><span style="width:64px">${n}</span><div class="bar grow"><i style="width:${weekday[i]/Math.max(1,...weekday)*100}%"></i></div><span class="muted sm" style="width:58px;text-align:end">${weekday[i]?fh(weekday[i]):'—'}</span></div>`).join('')}</div>
 <div class=grid2><div class=card><div class="muted sm">بهترین روز ثبت‌شده</div><b>${best?fj(best[0],1):'—'}</b><div class="muted sm">${best?fmin(best[1]):'هنوز داده‌ای نیست'}</div></div><div class=card><div class="muted sm">پربازده‌ترین ساعت شروع</div><b>${bh!=null?fa(bh)+':۰۰':'—'}</b><div class="muted sm">بر اساس ساعت شروع پارت یا تایمر</div></div></div>`}
-const statsVBase=statsV;
 function statsV(){
  const allLogs=Array.isArray(S.logs)?S.logs:[],allEntries=Array.isArray(S.timeEntries)?S.timeEntries:[];
  const validDate=x=>typeof x?.date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x.date)&&Number.isFinite(parse(x.date).getTime());
