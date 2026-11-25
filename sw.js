@@ -1,5 +1,5 @@
-// Update release: 2026-11-25-reliable-update-notice-v14
-const CACHE='planner-pwa-v14';
+// Update release: 2026-11-25-stats-render-fix-v15
+const CACHE='planner-pwa-v15';
 const CORE=['/','/index.html','/manifest.webmanifest','/icon.svg'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE))));
 self.addEventListener('message',e=>{if(e.data&&e.data.type==='SKIP_WAITING')self.skipWaiting();});
