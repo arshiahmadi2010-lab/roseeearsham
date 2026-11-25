@@ -1,5 +1,5 @@
-// Update release: 2026-11-25-stats-stack-overflow-fix-v17
-const CACHE='planner-pwa-v17';
+// Update release: 2026-11-25-app-audit-fixes-v18
+const CACHE='planner-pwa-v18';
 const CORE=['/','/index.html','/manifest.webmanifest','/icon.svg'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE))));
 self.addEventListener('message',e=>{if(e.data&&e.data.type==='SKIP_WAITING')self.skipWaiting();});
@@ -9,6 +9,8 @@ self.addEventListener('fetch',e=>{
  if(r.method!=='GET')return;
  const u=new URL(r.url);
  if(u.origin!==self.location.origin)return;
+ // API responses must stay JSON; never serve the app shell as an offline API fallback.
+ if(u.pathname.startsWith('/api/'))return;
  const isPage=r.mode==='navigate'||u.pathname==='/'||u.pathname==='/index.html';
  if(isPage){
   e.respondWith(fetch(r).then(res=>{
