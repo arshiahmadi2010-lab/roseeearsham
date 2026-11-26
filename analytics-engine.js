@@ -4,6 +4,11 @@
 const VERSION='1.1.0',FORMULA_VERSION=1;
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 const finite=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x));
+function isISODate(value){
+ if(typeof value!=='string'||! /^\d{4}-\d{2}-\d{2}$/.test(value))return false;
+ const [y,m,d]=value.split('-').map(Number),dt=new Date(Date.UTC(y,m-1,d));
+ return dt.getUTCFullYear()===y&&dt.getUTCMonth()===m-1&&dt.getUTCDate()===d;
+}
 function calculateDay(input){
  const plans=Array.isArray(input?.plans)?input.plans:[];
  const sessions=Array.isArray(input?.sessions)?input.sessions:[];
@@ -63,5 +68,5 @@ function diagnostics(){
  check('میانگین روزها ساده است',()=>aggregateDays([{status:'scored',score:100},{status:'scored',score:0},{status:'no-data',score:null}]).average===50);
  return{engineVersion:VERSION,formulaVersion:FORMULA_VERSION,total:tests.length,passed:tests.filter(t=>t.ok).length,failed:tests.filter(t=>!t.ok),tests};
 }
-root.StudyAnalytics={VERSION,FORMULA_VERSION,calculateDay,aggregateDays,diagnostics};
+root.StudyAnalytics={VERSION,FORMULA_VERSION,isISODate,calculateDay,aggregateDays,diagnostics};
 })(typeof globalThis!=='undefined'?globalThis:this);
