@@ -1,5 +1,5 @@
-// Update release: 2026-11-26-planner-drag-geometry-fix-v22
-const CACHE='planner-pwa-v22';
+// Update release: 2026-11-26-complete-poster-layouts-v23
+const CACHE='planner-pwa-v23';
 const CORE=['/','/index.html','/manifest.webmanifest','/icon.svg'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE))));
 self.addEventListener('message',e=>{if(e.data&&e.data.type==='SKIP_WAITING')self.skipWaiting();});
