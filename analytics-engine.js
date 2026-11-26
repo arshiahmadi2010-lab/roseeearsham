@@ -61,7 +61,7 @@ function diagnostics(){
  check('late score reaches zero at 60m',()=>calc([{id:'x',subjectId:'bio',plannedMinutes:60,plannedStart:480,actualStart:540}],[]).components.discipline===0);
  check('missing start redistributes weights',()=>{const r=calc([{id:'x',subjectId:'bio',plannedMinutes:60}], [{id:'s',partId:'x',seconds:1800}],{x:'partial'});return Math.abs(r.score-50)<1e-9&&r.components.discipline===null});
  check('duplicate session ids are ignored',()=>calc([{id:'x',subjectId:'bio',plannedMinutes:60}], [{id:'s',partId:'x',seconds:1800},{id:'s',partId:'x',seconds:1800}],{x:'partial'}).actualMinutes===30);
- check('excluded parts do not enter denominator',()=>calc([{id:'x',subjectId:'bio',plannedMinutes:60},{id:'y',subjectId:'chem',plannedMinutes:60}], [{id:'s',partId:'x',seconds:3600}],{x:'completed'},{y:true}).eligibleParts===1);
+ check('excluded parts do not enter denominator',()=>calc([{id:'x',subjectId:'bio',plannedMinutes:60},{id:'y',subjectId:'chem',plannedMinutes:60}], [{id:'s',partId:'x',seconds:3600}],{x:'completed'},['y']).eligibleParts===1);
  return {engineVersion:VERSION,formulaVersion:1,total:tests.length,passed:tests.filter(t=>t.ok).length,failed:tests.filter(t=>!t.ok),tests};
 }
 root.StudyAnalytics={VERSION,calculateDay,aggregateDays,diagnostics};
