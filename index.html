@@ -366,7 +366,7 @@ const wd=s=>(parse(s).getDay()+1)%7;
 const J=s=>{const d=parse(s);return g2j(d.getFullYear(),d.getMonth()+1,d.getDate())};
 const fj=(s,y)=>{const[a,b,c]=J(s);return fa(c)+' '+MONTHS[b-1]+(y?' '+fa(a):'')};
 //>
-const $=s=>document.querySelector(s),$=s=>[...document.querySelectorAll(s)];
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const uid=()=>Math.random().toString(36).slice(2,9);
 const fmin=m=>{m=Math.round(m);const h=~~(m/60),r=m%60;return h?fa(h)+' ساعت'+(r?' و '+fa(r)+' دقیقه':''):fa(r)+' دقیقه'};
