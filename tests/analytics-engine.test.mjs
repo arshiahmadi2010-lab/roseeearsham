@@ -42,7 +42,9 @@ assert.ok(app.includes("['__proto__','prototype','constructor'].includes(x)"),'R
 assert.ok(app.includes("function norm(o){const s=blank();"),'Imported state is merged without Object.assign prototype mutation');
 assert.ok(!app.includes('Object.assign(blank(),o||{})'),'Unsafe state merge has been removed');
 assert.ok(app.includes("!['__proto__','prototype','constructor'].includes(k)"),'Top-level imported object keys are filtered');
-assert.ok(app.includes('data:image\\\\/(?:png|jpeg|webp);base64,'),'Imported timer background accepts only known image data URLs');
+assert.ok(app.includes("data:image\\\\/(?:png|jpeg|webp);base64,"),'Imported timer background accepts only known image data URLs');
+assert.ok(app.includes('Array.isArray(s.blocks)'),'Legacy backup blocks are type-checked before migration');
+assert.ok(app.includes('Number.isInteger(day)&&day<0===false'),'Legacy backup day index is checked');
 assert.ok(app.includes('ic:cut(c.ic,8).replace'),'Imported course icons are sanitized');
 assert.ok(!app.includes("S.logs.forEach(l=>{if(l.part==p.id&&l.src=='part'){syncPartLog(l.date,p.id)}})"),'Editing recurring parts does not rewrite historical completion logs');
 assert.ok(app.includes('function save(initial=false)'),'Startup can persist state without advancing the cloud timestamp');
