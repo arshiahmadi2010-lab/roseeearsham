@@ -493,6 +493,7 @@ function analyticsEnsureDay(date){
 }
 function analyticsAverage(from,to){let sum=0,n=0;for(let d=from;d<=to;d=addD(d,1)){const r=analyticsDay(d);if(r.status==='scored'){sum+=r.score;n++}}return n?sum/n:null}
 function analyticsDay(date){
+ if(date>today())return {status:'pending',score:null,components:{time:null,adherence:null,discipline:null},formulaVersion:1};
  const plans=Array.isArray(S.analytics?.plans?.[date])?S.analytics.plans[date]:null;
  if(!plans)return {status:'no-data',score:null,components:{time:null,adherence:null,discipline:null},formulaVersion:1};
  const sessions=S.timeEntries.filter(x=>x.date===date).map(x=>({id:x.id,partId:x.part,seconds:x.seconds}));
@@ -823,7 +824,7 @@ emergencyOpen(){
  if(mode==='current'&&!S.activeTimer)return err('تایمر فعالی برای این انتخاب وجود ندارد.');
  const id=uid(),parts=[];
  for(let d=from;d<=to;d=addD(d,1)){
-  const plans=analyticsEnsureDay(d);
+  const plans=d<today()?(Array.isArray(S.analytics?.plans?.[d])?S.analytics.plans[d]:[]):analyticsEnsureDay(d);
   plans.forEach(p=>{
    if(!p.subjectId||p.included===false)return;
    let take=mode==='range';
