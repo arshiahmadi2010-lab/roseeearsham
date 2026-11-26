@@ -410,14 +410,14 @@ const PAL=['#2f9e8f','#e07a5f','#5b7fd1','#c2569b','#d4a017','#6c9a3c','#8e6bd1'
 const KEY='planner-v1';
 function blank(){return{ts:0,theme:'batman',goal:4,mg:0,yg:0,courses:[],parts:[[],[],[],[],[],[],[]],tpl:{},ov:{},logs:[],timeEntries:[],activeTimer:null,analytics:{schemaVersion:1,formulaVersion:1,plans:{},audit:[],emergencies:[]},timerBg:'',timerDim:48,deskFace:0,fx:true}}
 /* اعتبارسنجی داده‌ها (برای جلوگیری از تزریق HTML از بکاپ دستکاری‌شده و خراب‌شدن ساختار) */
-const OKID=x=>typeof x==='string'&&/^[\w-]{1,40}$/.test(x);
-const OKDATE=x=>typeof x==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x);
+const OKID=x=>typeof x==='string'&&/^[\w-]{1,40}$/.test(x)&&!['__proto__','prototype','constructor'].includes(x);
+const OKDATE=x=>typeof x==='string'&&StudyAnalytics.isISODate(x);
 const OKCOL=x=>typeof x==='string'&&/^#[0-9a-f]{3,8}$/i.test(x);
 const cut=(x,n)=>String(x==null?'':x).slice(0,n);
 function clean(s){
 const arr=a=>Array.isArray(a)?a:[],fin=x=>x!=null&&x!==''&&Number.isFinite(+x);
 s.goal=Math.max(.5,Math.min(24,+s.goal||4));s.deskFace=[0,1,2].includes(+s.deskFace)?+s.deskFace:0;s.fx=s.fx!==false;s.timerDim=Math.max(15,Math.min(85,fin(s.timerDim)?+s.timerDim:48));
-s.courses=arr(s.courses).filter(c=>c&&OKID(c.id)).map(c=>({id:c.id,name:cut(c.name,100),color:OKCOL(c.color)?c.color:'#7a8591',w:+c.w||3,ic:cut(c.ic,8),topics:arr(c.topics).filter(t=>t&&OKID(t.id)).map(t=>({id:t.id,name:cut(t.name,200),w:[1,2,3].includes(+t.w)?+t.w:2,st:[0,1,2].includes(+t.st)?+t.st:0}))}));
+s.courses=arr(s.courses).filter(c=>c&&OKID(c.id)).map(c=>({id:c.id,name:cut(c.name,100),color:OKCOL(c.color)?c.color:'#7a8591',w:+c.w||3,ic:cut(c.ic,8).replace(/[<>&"'`]/g,''),topics:arr(c.topics).filter(t=>t&&OKID(t.id)).map(t=>({id:t.id,name:cut(t.name,200),w:[1,2,3].includes(+t.w)?+t.w:2,st:[0,1,2].includes(+t.st)?+t.st:0}))}));
 s.parts=s.parts.map(a=>arr(a).filter(p=>p&&OKID(p.id)&&fin(p.s)&&fin(p.e)&&+p.s>=0&&+p.e<=1440&&+p.e>+p.s).map(p=>({id:p.id,name:cut(p.name,60),s:+p.s,e:+p.e})));
 const pids=new Set(s.parts.flat().map(p=>p.id)),cids=new Set(s.courses.map(c=>c.id)),as=v=>({c:v.c,tp:OKID(v.tp)?v.tp:'',n:cut(v.n,300)});
 const tpl={};Object.keys(s.tpl||{}).forEach(k=>{const v=s.tpl[k];if(pids.has(k)&&v&&cids.has(v.c))tpl[k]=as(v)});s.tpl=tpl;
@@ -444,7 +444,8 @@ function analyticsEnsureActivityDays(){
  }
  S.analytics.audit=(S.analytics.audit||[]).slice(-500);
 }
-function save(){if(typeof analyticsEnsureDay==='function'){analyticsEnsureDay(today());analyticsEnsureActivityDays()}S.ts=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));const o=JSON.parse(localStorage.getItem('planner-v1-autobk')||'null');if(S.courses.length&&(!o||Date.now()-o.ts>3*864e5))localStorage.setItem('planner-v1-autobk',JSON.stringify({ts:Date.now(),json:JSON.stringify(S)}))}catch(e){}clearTimeout(pt);pt=setTimeout(push,1500)}
+let STORAGE_ERR=false;
+function save(initial=false){if(typeof analyticsEnsureDay==='function'){analyticsEnsureDay(today());analyticsEnsureActivityDays()}if(!initial)S.ts=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));STORAGE_ERR=false}catch(e){STORAGE_ERR=true;console.warn('Local planner save failed:',e)}try{const o=JSON.parse(localStorage.getItem('planner-v1-autobk')||'null');if(S.courses.length&&(!o||Date.now()-o.ts>3*864e5))localStorage.setItem('planner-v1-autobk',JSON.stringify({ts:Date.now(),json:JSON.stringify(S)}))}catch(e){console.warn('Local auto-backup failed:',e)}if(!initial){clearTimeout(pt);pt=setTimeout(push,1500)}}
 let TIMER_BG_URL='',TIMER_BG_DB=null,TIMER_DRAFT=null;
 function bgDB(){return new Promise((resolve,reject)=>{if(TIMER_BG_DB)return resolve(TIMER_BG_DB);if(!('indexedDB'in window))return reject(Error('IndexedDB در این مرورگر در دسترس نیست.'));const q=indexedDB.open('study-planner-assets',1);q.onupgradeneeded=()=>{if(!q.result.objectStoreNames.contains('images'))q.result.createObjectStore('images')};q.onsuccess=()=>{TIMER_BG_DB=q.result;resolve(TIMER_BG_DB)};q.onerror=()=>reject(q.error||Error('خطا در باز کردن فضای تصویر'))})}
 async function blobDataURL(blob){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result));r.onerror=()=>reject(r.error);r.readAsDataURL(blob)})}
@@ -464,7 +465,7 @@ function bytesToBase64(bytes){let binary='';for(let i=0;i<bytes.length;i+=0x8000
 async function encryptBackup(code,json){const key=await backupKey(code),iv=crypto.getRandomValues(new Uint8Array(12)),data=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(json));return{id:await codeId(code),iv:bytesToBase64(iv),data:bytesToBase64(new Uint8Array(data)),ts:S.ts||Date.now()}}
 async function decryptBackup(code,p){const key=await backupKey(code),iv=Uint8Array.from(atob(p.iv),x=>x.charCodeAt(0)),data=Uint8Array.from(atob(p.data),x=>x.charCodeAt(0)),plain=await crypto.subtle.decrypt({name:'AES-GCM',iv},key,data);return new TextDecoder().decode(plain)}
 async function restoreCloudBackup(code){const id=await codeId(code),r=await fetch('/api/backup?id='+id);if(r.status===404)throw Error('برای این کد هنوز بکاپی پیدا نشد.');if(!r.ok)throw Error('دریافت بکاپ ناموفق بود.');const p=await r.json(),json=await decryptBackup(code,p),o=JSON.parse(json);if(!o||!Array.isArray(o.courses))throw Error('اطلاعات بکاپ معتبر نیست.');S=norm(o);localStorage.setItem(KEY,JSON.stringify(S));localStorage.setItem('planner-backup-code-v1',normCode(code));save();render();return true}
-async function initRemote(){const code=localStorage.getItem('planner-backup-code-v1'),st=$('#cloudstatus');if(!code){if(st)st.textContent='برای فعال‌سازی، کد بازیابی بساز';return}try{const id=await codeId(code),r=await fetch('/api/backup?id='+id);if(r.status===404){if(S.ts)push();if(st)st.textContent='کد فعال است؛ اولین بکاپ در حال ایجاد است';return}if(!r.ok)throw Error('fetch '+r.status);const p=await r.json(),o=JSON.parse(await decryptBackup(code,p));if(!o||!Array.isArray(o.courses))throw Error('invalid');if((p.ts||0)>(S.ts||0)){S=norm(o);localStorage.setItem(KEY,JSON.stringify(S));render()}else if((S.ts||0)>(p.ts||0)){await push()}if(st)st.textContent='بکاپ ابری متصل است ✓';}catch(e){if(st)st.textContent='بکاپ ابری در دسترس نیست؛ کد را بررسی کن';console.warn('Cloud restore:',e)}}
+async function initRemote(){const code=localStorage.getItem('planner-backup-code-v1'),st=$('#cloudstatus');if(!code){if(st)st.textContent='برای فعال‌سازی، کد بازیابی بساز';return}const localTs=+S.ts||0;try{const id=await codeId(code),r=await fetch('/api/backup?id='+id);if(r.status===404){if(S.ts||S.courses.length||S.logs.length||S.timeEntries.length)push();if(st)st.textContent='کد فعال است؛ اولین بکاپ در حال ایجاد است';return}if(!r.ok)throw Error('fetch '+r.status);const p=await r.json(),o=JSON.parse(await decryptBackup(code,p)),remoteTs=+p.ts||0;if(!o||!Array.isArray(o.courses))throw Error('invalid');if(remoteTs>(+S.ts||0)){if((+S.ts||0)!==localTs){await push()}else{S=norm(o);localStorage.setItem(KEY,JSON.stringify(S));render()}}else if((+S.ts||0)>remoteTs){await push()}if(st)st.textContent='بکاپ ابری متصل است ✓';}catch(e){if(st)st.textContent='بکاپ ابری در دسترس نیست؛ کد را بررسی کن';console.warn('Cloud restore:',e)}}
 async function initLegacyRemote(){try{const c=window.claude;if(!c||!c.use)return;const[d,u]=await Promise.all([c.use('db'),c.use('user')]);if(!d||!u)return;const id=await u.id();if(!id)return;ref=d.doc('data/users/'+id+'/state');const snap=await ref.get();if(snap.exists){const r=snap.data();if(r.ts>S.ts){const at=S.activeTimer;S=norm(JSON.parse(r.json));if(at&&!S.activeTimer)S.activeTimer=at;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}const ae=document.activeElement,typing=ae&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName);if(!M&&!typing&&!TSCREEN)render()}else if(r.ts<S.ts)push()}else if(S.ts)push();syncState('ok')}catch(e){syncState('err')}}
 const C=id=>S.courses.find(c=>c.id==id),cname=id=>id?(C(id)?.name||'درس حذف‌شده'):'بدون درس',ccol=id=>C(id)?.color||'#7a8591',T_=(c,t)=>C(c)?.topics.find(x=>x.id==t);
 const ICG=[['ریاضی','📐'],['هندسه','📐'],['فیزیک','⚡'],['شیمی','🧪'],['زیست','🧬'],['ادب','📖'],['عربی','🕌'],['دین','🌙'],['زبان','🌍'],['انگلیسی','🌍'],['زمین','🌋'],['تاریخ','🏛️'],['جغرافیا','🗺️'],['آمار','📊'],['فلسفه','💭'],['منطق','🧩']];
@@ -849,7 +850,7 @@ if(TSCREEN&&!(S.activeTimer||TIMER_DRAFT))TSCREEN=false;
 if(DESK&&!TSCREEN){$('#app').innerHTML=deskV();fxSync();deskTick();wake();return}
 if(TSCREEN){$('#app').innerHTML=timerScreenV();timerUpdate();wake();fxSync();return}
 relWake();
-$('#app').innerHTML=`<div class="wrap${V=='plan'?' wide':''}"><div class="top row"><b class=grow>برنامه‌ی مطالعه</b><span class="muted sm" id=sync>${SYT[SY]}</span></div><main class="${ANIM?'anim':''}">${VIEWS[V]()}</main></div>${miniBar()}<nav>${navH(V)}</nav>${modalH()}`;PERR='';ANIM=false;fxSync();document.body.style.paddingBottom=(S.activeTimer?210:150)+'px';
+$('#app').innerHTML=`<div class="wrap${V=='plan'?' wide':''}"><div class="top row"><b class=grow>برنامه‌ی مطالعه</b><span class="muted sm" id=sync>${SYT[SY]}</span></div><main class="${ANIM?'anim':''}">${VIEWS[V]()}</main></div>${miniBar()}<nav>${navH(V)}</nav>${modalH()}`;if(STORAGE_ERR){const se=$('#sync');if(se)se.textContent='ذخیره روی دستگاه ناموفق است'}PERR='';ANIM=false;fxSync();document.body.style.paddingBottom=(S.activeTimer?210:150)+'px';
 if(FOCUS_PID){const pid=FOCUS_PID;FOCUS_PID=null;const el=document.querySelector(`.prow[data-pid="${pid}"] .prow-name`);if(el){el.focus();el.select()}}}
 function demo(){const mk=(n,col,ts)=>({id:uid(),name:n,color:col,w:3,topics:ts.map((t,i)=>({id:uid(),name:t,w:2,st:i==0?2:i==1?1:0}))}),m=mk('ریاضی',PAL[0],['تابع','مثلثات','حد و پیوستگی']),f=mk('فیزیک',PAL[1],['حرکت‌شناسی','دینامیک','الکتریسیته']),s=mk('شیمی',PAL[2],['ساختار اتم','استوکیومتری','اسید و باز']);S.courses.push(m,f,s);fillParts();const cs=[m,f,s];
 S.parts.forEach((a,d)=>[...a].sort((x,y)=>x.s-y.s).forEach((p,i)=>{if(d==6&&i==2)return;const c=cs[(d+i)%3];S.tpl[p.id]={c:c.id,tp:c.topics[(i+d)%3].id,n:''}}))}
@@ -981,7 +982,7 @@ const day=S.parts.findIndex(a=>a.includes(p));
 if(f=='s'&&!(ne>ns)){ne=Math.min(ns+(p.e-p.s),1439);eEl.value=tm(ne)}
 if(!(ne>ns)){PERR='ساعت پایان باید بعد از ساعت شروع باشد.';return render()}
 if(S.parts[day].some(q=>q!==p&&ns<q.e&&q.s<ne)){PERR='این پارت با پارت دیگری هم‌پوشانی دارد.';return render()}
-p.s=ns;p.e=ne;S.logs.forEach(l=>{if(l.part==p.id&&l.src=='part'){syncPartLog(l.date,p.id)}});save();render()}});
+p.s=ns;p.e=ne;save();render()}});
 addEventListener('hashchange',()=>{const v=location.hash.slice(1);if(v=='timer'){A.quickStart();return}if(v=='desk'){if(!DESK)A.deskOpen();return}if(VIEWS[v]&&v!=V){V=v;OC=null;render()}});
 let DG=null;
 document.addEventListener('pointerdown',e=>{const g=e.target.closest('.gr');if(!g||DG)return;const row=g.closest('.tr[data-date][data-pid]');if(!row)return;e.preventDefault();DG={row,grip:g,y:e.clientY,t:null,pointerId:e.pointerId,moved:false};row.classList.add('drag');try{g.setPointerCapture(e.pointerId)}catch(x){}});
@@ -1000,7 +1001,7 @@ setInterval(()=>{if(!document.hidden){timerUpdate();deskTick()}},250);
 let DT=null;
 document.addEventListener('touchstart',e=>{DT=DESK&&!e.target.closest('button')?e.touches[0].clientX:null},{passive:true});
 document.addEventListener('touchend',e=>{if(DT==null)return;const dx=e.changedTouches[0].clientX-DT;DT=null;if(Math.abs(dx)>60){S.deskFace=((S.deskFace||0)+(dx<0?1:2))%3;save();render()}},{passive:true});
-analyticsEnsureDay(today());save();ANIM=true;render();loadTimerBg();initRemote();
+analyticsEnsureDay(today());save(true);ANIM=true;render();if(STORAGE_ERR){const se=$('#sync');if(se)se.textContent='ذخیره روی دستگاه ناموفق است'}loadTimerBg();initRemote();
 {const h0=location.hash.slice(1);if(h0=='timer')setTimeout(()=>A.quickStart(),400);else if(h0=='desk')setTimeout(()=>A.deskOpen(),200)}
 </script>
 
