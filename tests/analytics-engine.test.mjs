@@ -22,6 +22,12 @@ assert.match(html,/const totalAll=S\.logs\.reduce/,'Ordinary stats calculate tot
 assert.match(html,/function analyticsEnsureActivityDays\(\)/,'Past study dates receive analytics snapshots');
 assert.match(html,/\.map\(x=>x\.date\).*\.filter\(d=>StudyAnalytics\.isISODate\(d\)&&d<=today\(\)\)/s,'Snapshot backfill is limited to valid past activity dates');
 assert.match(html,/historical-snapshot-backfilled/,'Reconstructed historical snapshots are audited');
+assert.match(html,/StudyAnalytics\\.isISODate\\(x\\)/,'Imported dates use strict calendar validation');
+assert.match(html,/!\\['__proto__','prototype','constructor'\\]\\.includes\\(x\\)/,'Reserved object keys are rejected as IDs');
+assert.match(html,/ic:cut\\(c\\.ic,8\\)\\.replace/,'Imported course icons are sanitized');
+assert.doesNotMatch(html,/S\\.logs\\.forEach\\(l=>\\{if\\(l\\.part==p\\.id&&l\\.src=='part'\\)/,'Editing recurring parts does not rewrite historical completion logs');
+assert.match(html,/function save\\(initial=false\\)/,'Startup can persist state without advancing the cloud timestamp');
+assert.match(html,/analyticsEnsureDay\\(today\\);save\\(true\\)/,'Startup does not mark old local data as freshly edited');
 assert.match(html,/StudyAnalytics\.isISODate\(from\)/,'Emergency date validation uses the shared validator');
 assert.ok(html.includes('const wasIncluded=priorPart?priorPart.wasIncluded!==false:p.included!==false'),'Emergency exclusions retain the prior inclusion state');
 assert.match(html,/typeof x\.wasIncluded==='boolean'\?x\.wasIncluded/,'Emergency undo restores the prior inclusion state');
@@ -29,7 +35,8 @@ assert.match(html,/S\.activeTimer\.elapsedSec=timerSeconds\(\);S\.activeTimer\.r
 const css=await readFile(new URL('../analytics.css',import.meta.url),'utf8');
 assert.match(css,/\.an-wrap/,'Glass dashboard styles exist');
 const sw=await readFile(new URL('../sw.js',import.meta.url),'utf8');
-assert.match(sw,/planner-pwa-v31/,'Service worker cache was bumped');
+assert.match(sw,/const CACHE='planner-pwa-v\\d+'/,'Service worker has a versioned cache');
+assert.match(sw,/status:503/,'Missing offline static assets return an error instead of the app shell');
 assert.match(sw,/analytics-engine\.js/,'Service worker caches the engine');
 assert.match(sw,/analytics\.css/,'Service worker caches analytics styles');
 console.log('Analytics engine tests:',result.passed+'/'+result.total,'passed; app syntax and PWA assets verified');
