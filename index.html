@@ -476,7 +476,7 @@ function analyticsEnsureDay(date){
    proposed.plannedStart=baseline;proposed.plannedMinutes=Math.max(0,p.e-baseline);proposed.included=proposed.plannedMinutes>0;
    A0.audit.push({type:'subject-assigned-midday',date,partId:p.id,at:Date.now(),plannedMinutes:proposed.plannedMinutes,baseline});
   }
-  if(prior&&has){
+  if(prior&&has&&!( !prior.subjectId&&a?.c)){
    const changed=prior.plannedMinutes!==proposed.plannedMinutes||prior.plannedStart!==proposed.plannedStart||prior.name!==proposed.name;
    const sameLast=prior.lastProposed&&prior.lastProposed.plannedMinutes===proposed.plannedMinutes&&prior.lastProposed.plannedStart===proposed.plannedStart&&prior.lastProposed.name===proposed.name;
    if(changed&&!sameLast)A0.audit.push({type:'plan-change-after-study',date,partId:p.id,at:Date.now(),before:{name:prior.name,plannedMinutes:prior.plannedMinutes,plannedStart:prior.plannedStart},proposed:{name:proposed.name,plannedMinutes:proposed.plannedMinutes,plannedStart:proposed.plannedStart}});
