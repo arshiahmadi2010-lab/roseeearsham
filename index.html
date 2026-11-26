@@ -887,7 +887,7 @@ emergencyOpen(){
  const from=$('#emFrom')?.value,to=$('#emTo')?.value,mode=$('#emMode')?.value,reason=($('#emReason')?.value||'').trim();
  if(!StudyAnalytics.isISODate(from)||!StudyAnalytics.isISODate(to)||from>to)return err('بازهٔ تاریخ معتبر نیست.');
  if(diff(to,from)>365)return err('بازهٔ اضطراری حداکثر می‌تواند یک سال باشد.');
-  if(S.activeTimer?.running){S.activeTimer.elapsedSec=timerSeconds();S.activeTimer.running=false;S.activeTimer.startedAt=null}
+  
  if(mode==='current'&&!S.activeTimer)return err('تایمر فعالی برای این انتخاب وجود ندارد.');
  const id=uid(),parts=[];
  for(let d=from;d<=to;d=addD(d,1)){
@@ -901,6 +901,7 @@ emergencyOpen(){
   });
  }
  if(!parts.length)return err('در این بازه پارت واجد شرایطی برای مستثناکردن پیدا نشد.');
+  if(S.activeTimer?.running){S.activeTimer.elapsedSec=timerSeconds();S.activeTimer.running=false;S.activeTimer.startedAt=null}
  S.analytics.emergencies=S.analytics.emergencies||[];
  S.analytics.emergencies.push({id,from,to,reason,createdAt:Date.now(),canceledAt:0,parts});
  S.analytics.audit.push({type:'emergency-applied',id,from,to,at:Date.now(),parts:parts.length});
