@@ -1,5 +1,5 @@
-// Update release: 2026-11-26-schedule-posters-v1
-const CACHE='planner-pwa-v32';
+// Update release: 2026-11-26-poster-card-redesign
+const CACHE='planner-pwa-v33';
 const CORE=['/','/index.html','/manifest.webmanifest','/icon.svg','/analytics-engine.js','/analytics.css'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE))));
 self.addEventListener('message',e=>{if(e.data&&e.data.type==='SKIP_WAITING')self.skipWaiting();});
