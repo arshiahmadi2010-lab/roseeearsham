@@ -51,7 +51,7 @@ function aggregateDays(days){
 function diagnostics(){
  const tests=[];
  const check=(name,fn)=>{try{const r=fn();tests.push({name,ok:r===true,detail:r===true?'':String(r)})}catch(e){tests.push({name,ok:false,detail:String(e&&e.message||e)})}};
- const calc=(plans,sessions,completions)=>calculateDay({plans,sessions,completions});
+ const calc=(plans,sessions,completions,excludedPartIds=[])=>calculateDay({plans,sessions,completions,excludedPartIds});
  check('no plan returns no-data',()=>calc([],[]).status==='no-data');
  check('blank subject is excluded',()=>calc([{id:'x',subjectId:'',plannedMinutes:60}],[]).status==='no-data');
  check('time is capped at planned minutes',()=>calc([{id:'x',subjectId:'bio',plannedMinutes:60}], [{id:'s',partId:'x',seconds:7200}],{x:'completed'}).components.time===100);
