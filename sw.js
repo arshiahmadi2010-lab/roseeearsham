@@ -1,5 +1,5 @@
 // Update release: 2026-11-26-poster-card-redesign
-const CACHE='planner-pwa-v33';
+const CACHE='planner-pwa-v34';
 const CORE=['/','/index.html','/manifest.webmanifest','/icon.svg','/analytics-engine.js','/analytics.css'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE))));
 self.addEventListener('message',e=>{if(e.data&&e.data.type==='SKIP_WAITING')self.skipWaiting();});
@@ -22,5 +22,5 @@ self.addEventListener('fetch',e=>{
  e.respondWith(caches.match(r).then(c=>c||fetch(r).then(res=>{
   if(res.ok)caches.open(CACHE).then(cache=>cache.put(r,res.clone()));
   return res;
- }).catch(()=>caches.match('/index.html'))));
+ }).catch(()=>new Response('Offline',{status:503,headers:{'content-type':'text/plain; charset=utf-8','cache-control':'no-store'}}))));
 });
