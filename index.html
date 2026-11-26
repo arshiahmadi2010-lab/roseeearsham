@@ -827,7 +827,7 @@ emergencyOpen(){
  for(let d=from;d<=to;d=addD(d,1)){
   const plans=d<today()?(Array.isArray(S.analytics?.plans?.[d])?S.analytics.plans[d]:[]):analyticsEnsureDay(d);
   plans.forEach(p=>{
-   if(!p.subjectId||p.included===false)return;
+   if(!p.subjectId||p.deleted)return;
    let take=mode==='range';
    if(mode==='current')take=d===S.activeTimer.date&&p.id===S.activeTimer.part;
    if(mode==='remaining')take=d>today()||(d===today()&&(p.id===S.activeTimer?.part||p.plannedStart>=nowMin()));
@@ -845,7 +845,7 @@ emergencyUndo(el){
  const e=(S.analytics?.emergencies||[]).find(x=>x.id===D.id&&!x.canceledAt);if(!e)return;
  if(!el.dataset.sure){el.dataset.sure='1';el.textContent='برای تأیید دوباره بزن';return}
  e.canceledAt=Date.now();
- e.parts.forEach(x=>{const p=(S.analytics.plans[x.date]||[]).find(q=>q.id===x.partId);if(p&&p.emergencyId===e.id){p.emergencyId='';p.included=!!p.subjectId&&!p.deleted}});
+ e.parts.forEach(x=>{const p=(S.analytics.plans[x.date]||[]).find(q=>q.id===x.partId);if(p&&p.emergencyId===e.id){const other=(S.analytics.emergencies||[]).find(q=>q.id!==e.id&&!q.canceledAt&&q.parts.some(z=>z.date===x.date&&z.partId===x.partId));p.emergencyId=other?.id||'';p.included=!!p.subjectId&&!p.deleted&&!other}});
  S.analytics.audit.push({type:'emergency-canceled',id:e.id,at:Date.now()});
  save();render()
 },
