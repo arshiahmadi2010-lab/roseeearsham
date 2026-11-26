@@ -585,20 +585,20 @@ return`<h1>آمار و تحلیل عملکرد</h1>
 <div class=card><h2>الگوی روزهای هفته</h2>${DAYS.map((n,i)=>`<div class=row><span style="width:64px">${n}</span><div class="bar grow"><i style="width:${weekday[i]/Math.max(1,...weekday)*100}%"></i></div><span class="muted sm" style="width:58px;text-align:end">${weekday[i]?fh(weekday[i]):'—'}</span></div>`).join('')}</div>
 <div class=grid2><div class=card><div class="muted sm">بهترین روز ثبت‌شده</div><b>${best?fj(best[0],1):'—'}</b><div class="muted sm">${best?fmin(best[1]):'هنوز داده‌ای نیست'}</div></div><div class=card><div class="muted sm">پربازده‌ترین ساعت شروع</div><b>${bh!=null?fa(bh)+':۰۰':'—'}</b><div class="muted sm">بر اساس ساعت شروع پارت یا تایمر</div></div></div>`}
 function statsV(){
- const allLogs=Array.isArray(S.logs)?S.logs:[],allEntries=Array.isArray(S.timeEntries)?S.timeEntries:[];
+ const original=S,allLogs=Array.isArray(original.logs)?original.logs:[],allEntries=Array.isArray(original.timeEntries)?original.timeEntries:[];
  const validDate=x=>typeof x?.date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x.date)&&Number.isFinite(parse(x.date).getTime());
  const safeLogs=allLogs.filter(x=>validDate(x)&&Number.isFinite(+x.min)).map(x=>({...x,min:+x.min}));
  const safeEntries=allEntries.filter(x=>validDate(x)&&Number.isFinite(+(x.seconds??0))).map(x=>({...x,seconds:+x.seconds||0}));
  const days=STPER==='all'?0:+STPER,from=days?addD(today(),1-days):'';
  try{
-  S.logs=days?safeLogs.filter(x=>x.date>=from&&x.date<=today()):safeLogs;
-  S.timeEntries=days?safeEntries.filter(x=>x.date>=from&&x.date<=today()):safeEntries;
-  let body=statsVBase();if(STPER!=='30'){body=body.replaceAll('۳۰ روز اخیر','بازه‌ی انتخابی').replaceAll('شش ماه اخیر','ماه‌های اخیر')}
+  S={...original,logs:days?safeLogs.filter(x=>x.date>=from&&x.date<=today()):safeLogs,timeEntries:days?safeEntries.filter(x=>x.date>=from&&x.date<=today()):safeEntries};
+  let body=statsVBase();
+  if(STPER!=='30')body=body.replaceAll('۳۰ روز اخیر','بازه‌ی انتخابی').replaceAll('شش ماه اخیر','ماه‌های اخیر');
   const opts=[['7','۷ روز'],['30','۳۰ روز'],['90','۹۰ روز'],['365','یک سال'],['all','همه‌ی سوابق']];
-  const bar='<div class="card"><div class="row"><b class=grow>بازه‌ی تحلیل</b><span class=tag>'+ (STPER==='all'?'تمام سوابق':'از '+fj(from,1)+' تا امروز') +'</span></div><div class=stats-period>'+opts.map(([k,n])=>'<button class="chip '+(STPER===k?'on':'')+'" data-a=statsPeriod data-k='+k+'>'+n+'</button>').join('')+'</div><p class="muted sm">آمار این صفحه بر اساس بازه‌ی انتخابی محاسبه می‌شود؛ سوابق اصلی بدون تغییر باقی می‌مانند.</p></div>';
-  return body.replace('<h1>آمار و تحلیل عملکرد</h1>', '<div class=stats-heading><div><h1>آمار و تحلیل</h1><p class="muted sm">بررسی روند، استمرار و تعادل مطالعه</p></div></div>'+bar);
- }catch(err){console.error('Stats render failed:',err);const detail=String(err&&err.message||err||'خطای نامشخص').slice(0,180);return '<div class=card><h1>آمار و تحلیل</h1><p>نمایش آمار با خطا روبه‌رو شد. داده‌های ثبت‌شده دست‌نخورده باقی مانده‌اند.</p><p class="muted sm">کد خطا: '+esc(detail)+'</p></div>'}
- finally{S.logs=allLogs;S.timeEntries=allEntries}
+  const bar='<div class="card"><div class="row"><b class=grow>بازه‌ی تحلیل</b><span class=tag>'+(STPER==='all'?'تمام سوابق':'از '+fj(from,1)+' تا امروز')+'</span></div><div class=stats-period>'+opts.map(([k,n])=>'<button class="chip '+(STPER===k?'on':'')+'" data-a=statsPeriod data-k='+k+'>'+n+'</button>').join('')+'</div><p class="muted sm">تمام شاخص‌های اصلی بر اساس بازه‌ی انتخابی محاسبه می‌شوند؛ سوابق اصلی بدون تغییر باقی می‌مانند.</p></div>';
+  return body.replace('<h1>آمار و تحلیل عملکرد</h1>','<div class=stats-heading><div><h1>آمار و تحلیل</h1><p class="muted sm">روند، استمرار، توزیع زمان و عملکرد درس‌ها</p></div></div>'+bar);
+ }catch(err){console.error('Stats render failed:',err);return '<div class=card><h1>آمار و تحلیل</h1><p>نمایش آمار با خطا روبه‌رو شد. داده‌های ثبت‌شده دست‌نخورده باقی مانده‌اند.</p><p class="muted sm">کد خطا: '+esc(String(err&&err.message||err||'خطای نامشخص').slice(0,180))+'</p></div>'}
+ finally{S=original}
 }
 function partRow(p,i){return`<div class=prow data-pid=${p.id}><div class=prow-top><span class=prow-ix>${fa(i+1)}</span><input class=prow-name data-pf=name data-pid=${p.id} value="${esc(p.name)}" aria-label="نام پارت"><button class=prow-del data-a=delpart data-pid=${p.id} aria-label="حذف پارت">${ico('trash',16)}</button></div><div class=prow-time><label class=ptf><span>شروع</span><input type=time data-pf=s data-pid=${p.id} value="${tm(p.s)}"></label><span class=prow-sep>تا</span><label class=ptf><span>پایان</span><input type=time data-pf=e data-pid=${p.id} value="${tm(p.e)}"></label></div><div class=prow-dur>${ico('clock',12)}${fmin(p.e-p.s)}</div></div>`}
 function partsCard(){const d=SPD,ps=[...S.parts[d]].sort((a,b)=>a.s-b.s),tot=ps.reduce((s,p)=>s+(p.e-p.s),0);
