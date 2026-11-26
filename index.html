@@ -426,7 +426,7 @@ s.logs=arr(s.logs).filter(l=>l&&OKID(l.id)&&OKDATE(l.date)&&fin(l.min)).map(l=>{
 s.timeEntries=arr(s.timeEntries).filter(x=>x&&OKID(x.id)&&OKDATE(x.date)&&OKID(x.part)&&fin(x.seconds)&&+x.seconds>0).map(x=>({id:x.id,date:x.date,part:x.part,seconds:+x.seconds,method:x.method=='timer'?'timer':'manual',createdAt:+x.createdAt||0,logId:OKID(x.logId)?x.logId:''}));
 const t=s.activeTimer;
 if(t&&OKID(t.part)&&OKDATE(t.date)){const sa=fin(t.startedAt)&&+t.startedAt>0?+t.startedAt:null;s.activeTimer={date:t.date,part:t.part,elapsedSec:Math.max(0,+t.elapsedSec||0),startedAt:t.running&&sa?sa:null,running:!!t.running&&!!sa,h:fin(t.h)?+t.h:null}}else s.activeTimer=null;
-s.analytics=s.analytics&&typeof s.analytics==='object'?s.analytics:{schemaVersion:1,formulaVersion:1,plans:{},audit:[]};s.analytics.schemaVersion=1;s.analytics.formulaVersion=1;s.analytics.plans=s.analytics.plans&&typeof s.analytics.plans==='object'?s.analytics.plans:{};s.analytics.audit=Array.isArray(s.analytics.audit)?s.analytics.audit.slice(-500):[];Object.keys(s.analytics.plans).forEach(d=>{if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(d)||!Array.isArray(s.analytics.plans[d])){delete s.analytics.plans[d];return}s.analytics.plans[d]=s.analytics.plans[d].filter(p=>p&&OKID(p.id)).map(p=>({id:p.id,name:cut(p.name,60),subjectId:OKID(p.subjectId)?p.subjectId:'',plannedMinutes:Math.max(0,Math.min(1440,+p.plannedMinutes||0)),plannedStart:fin(p.plannedStart)?+p.plannedStart:null,actualStart:fin(p.actualStart)?+p.actualStart:null,included:p.included!==false,kind:p.kind==='unscheduled'?'unscheduled':'scheduled',status:['completed','partial'].includes(p.status)?p.status:''}))});s.timerBg=typeof s.timerBg==='string'?s.timerBg:'';
+s.analytics=s.analytics&&typeof s.analytics==='object'?s.analytics:{schemaVersion:1,formulaVersion:1,plans:{},audit:[]};s.analytics.schemaVersion=1;s.analytics.formulaVersion=1;s.analytics.plans=s.analytics.plans&&typeof s.analytics.plans==='object'?s.analytics.plans:{};s.analytics.audit=Array.isArray(s.analytics.audit)?s.analytics.audit.slice(-500):[];Object.keys(s.analytics.plans).forEach(d=>{if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(d)||!Array.isArray(s.analytics.plans[d])){delete s.analytics.plans[d];return}s.analytics.plans[d]=s.analytics.plans[d].filter(p=>p&&OKID(p.id)).map(p=>({id:p.id,name:cut(p.name,60),subjectId:OKID(p.subjectId)?p.subjectId:'',plannedMinutes:Math.max(0,Math.min(1440,+p.plannedMinutes||0)),plannedStart:fin(p.plannedStart)?+p.plannedStart:null,actualStart:fin(p.actualStart)?+p.actualStart:null,included:p.included!==false,kind:p.kind==='unscheduled'?'unscheduled':'scheduled',deleted:!!p.deleted,lastProposed:p.lastProposed&&typeof p.lastProposed==='object'?{name:cut(p.lastProposed.name,60),plannedMinutes:+p.lastProposed.plannedMinutes||0,plannedStart:fin(p.lastProposed.plannedStart)?+p.lastProposed.plannedStart:null}:null,status:['completed','partial'].includes(p.status)?p.status:''}))});s.timerBg=typeof s.timerBg==='string'?s.timerBg:'';
 return s}
 function norm(o){const s=Object.assign(blank(),o||{});const themeIds=['spider','batman','super','cyber','aurora','galaxy','synth','ocean','emerald','crimson','violet','gold','arctic','matrix','graphite'];if(!themeIds.includes(s.theme))s.theme=s.theme==='night'?'ocean':s.theme==='dark'?'graphite':'batman';if(!Array.isArray(s.parts)||s.parts.length!=7)s.parts=[[],[],[],[],[],[],[]];if(!Array.isArray(s.timeEntries))s.timeEntries=[];if(s.activeTimer&&!s.activeTimer.running&&!(+s.activeTimer.elapsedSec>0))s.activeTimer=null;if(s.blocks){s.blocks.forEach(b=>{const p={id:uid(),name:'پارت '+fa(s.parts[b.day].length+1),s:b.s,e:b.e};s.parts[b.day].push(p);s.tpl[p.id]={c:b.c,tp:b.tp||'',n:b.n||''}});delete s.blocks}return clean(s)}
 let S=(()=>{try{const j=localStorage.getItem(KEY);if(j)return norm(JSON.parse(j))}catch(e){}return norm()})();
@@ -472,9 +472,10 @@ function analyticsEnsureDay(date){
   const a=asg(date,p),prior=old.find(x=>x.id===p.id),has=S.timeEntries.some(x=>x.date===date&&x.part===p.id)||S.logs.some(x=>x.date===date&&x.part===p.id);
   const proposed={id:p.id,name:p.name,subjectId:a?.c||'',plannedMinutes:p.e-p.s,plannedStart:p.s,actualStart:prior?.actualStart??null,included:!!a,kind:'scheduled',status:doneLog(date,p.id)?'completed':'',createdAt:prior?.createdAt||Date.now()};
   if(prior&&has){
-   if(prior.plannedMinutes!==proposed.plannedMinutes||prior.plannedStart!==proposed.plannedStart||prior.name!==proposed.name){
-    A0.audit.push({type:'plan-change-after-study',date,partId:p.id,at:Date.now(),before:{name:prior.name,plannedMinutes:prior.plannedMinutes,plannedStart:prior.plannedStart},proposed:{name:proposed.name,plannedMinutes:proposed.plannedMinutes,plannedStart:proposed.plannedStart}});
-   }
+   const changed=prior.plannedMinutes!==proposed.plannedMinutes||prior.plannedStart!==proposed.plannedStart||prior.name!==proposed.name;
+   const sameLast=prior.lastProposed&&prior.lastProposed.plannedMinutes===proposed.plannedMinutes&&prior.lastProposed.plannedStart===proposed.plannedStart&&prior.lastProposed.name===proposed.name;
+   if(changed&&!sameLast)A0.audit.push({type:'plan-change-after-study',date,partId:p.id,at:Date.now(),before:{name:prior.name,plannedMinutes:prior.plannedMinutes,plannedStart:prior.plannedStart},proposed:{name:proposed.name,plannedMinutes:proposed.plannedMinutes,plannedStart:proposed.plannedStart}});
+   if(changed)proposed.lastProposed={name:proposed.name,plannedMinutes:proposed.plannedMinutes,plannedStart:proposed.plannedStart};
    proposed.name=prior.name;proposed.plannedMinutes=prior.plannedMinutes;proposed.plannedStart=prior.plannedStart;
    proposed.actualStart=prior.actualStart;proposed.createdAt=prior.createdAt;
   }
@@ -483,7 +484,7 @@ function analyticsEnsureDay(date){
  old.forEach(p=>{
   if(next.some(x=>x.id===p.id))return;
   const has=S.timeEntries.some(x=>x.date===date&&x.part===p.id)||S.logs.some(x=>x.date===date&&x.part===p.id);
-  if(p.kind==='unscheduled'){next.push(p);return}
+  if(p.kind==='unscheduled'||p.deleted){next.push(p);return}
   if(has){A0.audit.push({type:'part-deleted-after-study',date,partId:p.id,at:Date.now(),previous:{name:p.name,plannedMinutes:p.plannedMinutes}});next.push({...p,included:false,deleted:true})}
  });
  A0.audit=A0.audit.slice(-500);
