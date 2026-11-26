@@ -468,10 +468,25 @@ const asg=(d,p)=>{const k=d+'|'+p.id;return k in S.ov?(S.ov[k]||null):(S.tpl[p.i
 const planOn=d=>dayParts(d).reduce((a,p)=>a+(asg(d,p)?p.e-p.s:0),0);
 function analyticsEnsureDay(date){
  const A0=S.analytics||(S.analytics={schemaVersion:1,formulaVersion:1,plans:{},audit:[]}),old=Array.isArray(A0.plans[date])?A0.plans[date]:[];
- const next=dayParts(date).map(p=>{const a=asg(date,p),prior=old.find(x=>x.id===p.id);
- return{id:p.id,name:p.name,subjectId:a?.c||'',plannedMinutes:p.e-p.s,plannedStart:p.s,actualStart:prior?.actualStart??null,included:!!a,status:doneLog(date,p.id)?'completed':'',createdAt:prior?.createdAt||Date.now()};
+ const next=dayParts(date).map(p=>{
+  const a=asg(date,p),prior=old.find(x=>x.id===p.id),has=S.timeEntries.some(x=>x.date===date&&x.part===p.id)||S.logs.some(x=>x.date===date&&x.part===p.id);
+  const proposed={id:p.id,name:p.name,subjectId:a?.c||'',plannedMinutes:p.e-p.s,plannedStart:p.s,actualStart:prior?.actualStart??null,included:!!a,kind:'scheduled',status:doneLog(date,p.id)?'completed':'',createdAt:prior?.createdAt||Date.now()};
+  if(prior&&has){
+   if(prior.plannedMinutes!==proposed.plannedMinutes||prior.plannedStart!==proposed.plannedStart||prior.name!==proposed.name){
+    A0.audit.push({type:'plan-change-after-study',date,partId:p.id,at:Date.now(),before:{name:prior.name,plannedMinutes:prior.plannedMinutes,plannedStart:prior.plannedStart},proposed:{name:proposed.name,plannedMinutes:proposed.plannedMinutes,plannedStart:proposed.plannedStart}});
+   }
+   proposed.name=prior.name;proposed.plannedMinutes=prior.plannedMinutes;proposed.plannedStart=prior.plannedStart;
+   proposed.actualStart=prior.actualStart;proposed.createdAt=prior.createdAt;
+  }
+  return proposed;
  });
- old.forEach(p=>{if(!next.some(x=>x.id===p.id)&&(p.kind==='unscheduled'||S.timeEntries.some(x=>x.date===date&&x.part===p.id)||S.logs.some(x=>x.date===date&&x.part===p.id)))next.push(p)});
+ old.forEach(p=>{
+  if(next.some(x=>x.id===p.id))return;
+  const has=S.timeEntries.some(x=>x.date===date&&x.part===p.id)||S.logs.some(x=>x.date===date&&x.part===p.id);
+  if(p.kind==='unscheduled'){next.push(p);return}
+  if(has){A0.audit.push({type:'part-deleted-after-study',date,partId:p.id,at:Date.now(),previous:{name:p.name,plannedMinutes:p.plannedMinutes}});next.push({...p,included:false,deleted:true})}
+ });
+ A0.audit=A0.audit.slice(-500);
  A0.plans[date]=next;
  return next;
 }
