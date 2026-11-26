@@ -1,6 +1,6 @@
 // Update release: 2026-11-26-poster-card-redesign
-const CACHE='planner-pwa-v35';
-const CORE=['/','/index.html','/manifest.webmanifest','/icon.svg','/analytics-engine.js','/analytics.css','/app.css','/app.js','/pwa-update.js'];
+const CACHE='planner-pwa-v36';
+const CORE=['/','/index.html','/manifest.webmanifest','/icon.svg','/analytics-engine.js','/analytics.css','/app.css','/app-core.js','/app-views.js','/app-actions.js','/app-events.js','/pwa-update.js'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE))));
 self.addEventListener('message',e=>{if(e.data&&e.data.type==='SKIP_WAITING')self.skipWaiting();});
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
