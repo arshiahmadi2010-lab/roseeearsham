@@ -433,7 +433,18 @@ let S=(()=>{try{const j=localStorage.getItem(KEY);if(j)return norm(JSON.parse(j)
 let pt,SY='local',ref=null,pushing=false,pend=false;
 const SYT={local:'ذخیره روی همین دستگاه',ok:'ذخیره‌شده روی حساب',err:'همگام‌سازی با حساب ممکن نشد'};
 function syncState(s){SY=s;const e=$('#sync');if(e)e.textContent=SYT[s]}
-function save(){if(typeof analyticsEnsureDay==='function')analyticsEnsureDay(today());S.ts=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));const o=JSON.parse(localStorage.getItem('planner-v1-autobk')||'null');if(S.courses.length&&(!o||Date.now()-o.ts>3*864e5))localStorage.setItem('planner-v1-autobk',JSON.stringify({ts:Date.now(),json:JSON.stringify(S)}))}catch(e){}clearTimeout(pt);pt=setTimeout(push,1500)}
+function analyticsEnsureActivityDays(){
+ if(typeof analyticsEnsureDay!=='function'||!S.analytics)return;
+ const dates=[...new Set([...(S.logs||[]).map(x=>x.date),...(S.timeEntries||[]).map(x=>x.date)])]
+  .filter(d=>StudyAnalytics.isISODate(d)&&d<=today()).sort();
+ for(const d of dates){
+  if(Array.isArray(S.analytics.plans?.[d]))continue;
+  const plans=analyticsEnsureDay(d);
+  if(plans.length)S.analytics.audit.push({type:'historical-snapshot-backfilled',date:d,at:Date.now(),source:'available-plan-and-study-records'});
+ }
+ S.analytics.audit=(S.analytics.audit||[]).slice(-500);
+}
+function save(){if(typeof analyticsEnsureDay==='function'){analyticsEnsureDay(today());analyticsEnsureActivityDays()}S.ts=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));const o=JSON.parse(localStorage.getItem('planner-v1-autobk')||'null');if(S.courses.length&&(!o||Date.now()-o.ts>3*864e5))localStorage.setItem('planner-v1-autobk',JSON.stringify({ts:Date.now(),json:JSON.stringify(S)}))}catch(e){}clearTimeout(pt);pt=setTimeout(push,1500)}
 let TIMER_BG_URL='',TIMER_BG_DB=null,TIMER_DRAFT=null;
 function bgDB(){return new Promise((resolve,reject)=>{if(TIMER_BG_DB)return resolve(TIMER_BG_DB);if(!('indexedDB'in window))return reject(Error('IndexedDB در این مرورگر در دسترس نیست.'));const q=indexedDB.open('study-planner-assets',1);q.onupgradeneeded=()=>{if(!q.result.objectStoreNames.contains('images'))q.result.createObjectStore('images')};q.onsuccess=()=>{TIMER_BG_DB=q.result;resolve(TIMER_BG_DB)};q.onerror=()=>reject(q.error||Error('خطا در باز کردن فضای تصویر'))})}
 async function blobDataURL(blob){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result));r.onerror=()=>reject(r.error);r.readAsDataURL(blob)})}
