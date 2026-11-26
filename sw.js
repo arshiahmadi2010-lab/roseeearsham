@@ -1,5 +1,5 @@
-// Update release: 2026-11-26-stats-isolated-state-v26
-const CACHE='planner-pwa-v26';
+// Update release: 2026-11-26-layout-polish-v27
+const CACHE='planner-pwa-v27';
 const CORE=['/','/index.html','/manifest.webmanifest','/icon.svg'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE))));
 self.addEventListener('message',e=>{if(e.data&&e.data.type==='SKIP_WAITING')self.skipWaiting();});
