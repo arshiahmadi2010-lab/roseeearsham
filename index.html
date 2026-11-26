@@ -132,7 +132,7 @@ main{padding-bottom:8px}
 .prow{padding:13px;border-radius:17px}
 .prow-time{gap:7px}
 @media(max-width:420px){.home-actions{grid-template-columns:1fr 1fr}.home-actions .btn:first-child{grid-column:1/-1}.next{grid-template-columns:34px minmax(0,1fr)}.wrap.wide{max-width:100%}.strip{gap:4px}.strip .sd{border-radius:12px}}
-</style></head><body>
+</style><link rel="stylesheet" href="/analytics.css"></head><body>
 <style>
 /* فونت: برای کم‌حجم ماندن فایل، از نسخهٔ نصب‌شده یا CDN استفاده می‌شود؛ در نبود اینترنت Tahoma جایگزین است. */
 @font-face{font-family:'Vazirmatn';font-weight:100 900;font-display:swap;src:local('Vazirmatn'),url(https://cdn.jsdelivr.net/npm/vazirmatn@33.0.3/fonts/webfonts/Vazirmatn%5Bwght%5D.woff2) format('woff2')}
@@ -378,6 +378,7 @@ main.anim .rg{animation:ringin 1.1s ease-out}
 </style>
 <canvas id="bgfx" aria-hidden="true"></canvas>
 <div id="app" dir="rtl"></div>
+<script src="/analytics-engine.js"></script>
 <script>
 
 document.documentElement.lang='fa';document.documentElement.dir='rtl';
@@ -407,7 +408,7 @@ const fh=m=>fa((m/60).toFixed(1).replace(/\.0$/,'')).replace('.','٫');
 const ftime=m=>fa(p2(~~(m/60))+':'+p2(m%60)),tm=m=>p2(~~(m/60))+':'+p2(m%60);
 const PAL=['#2f9e8f','#e07a5f','#5b7fd1','#c2569b','#d4a017','#6c9a3c','#8e6bd1','#d9534f','#3aa0c8','#7a8591'];
 const KEY='planner-v1';
-function blank(){return{ts:0,theme:'batman',goal:4,mg:0,yg:0,courses:[],parts:[[],[],[],[],[],[],[]],tpl:{},ov:{},logs:[],timeEntries:[],activeTimer:null,timerBg:'',timerDim:48,deskFace:0,fx:true}}
+function blank(){return{ts:0,theme:'batman',goal:4,mg:0,yg:0,courses:[],parts:[[],[],[],[],[],[],[]],tpl:{},ov:{},logs:[],timeEntries:[],activeTimer:null,analytics:{schemaVersion:1,formulaVersion:1,plans:{},audit:[]},timerBg:'',timerDim:48,deskFace:0,fx:true}}
 /* اعتبارسنجی داده‌ها (برای جلوگیری از تزریق HTML از بکاپ دستکاری‌شده و خراب‌شدن ساختار) */
 const OKID=x=>typeof x==='string'&&/^[\w-]{1,40}$/.test(x);
 const OKDATE=x=>typeof x==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x);
@@ -425,14 +426,14 @@ s.logs=arr(s.logs).filter(l=>l&&OKID(l.id)&&OKDATE(l.date)&&fin(l.min)).map(l=>{
 s.timeEntries=arr(s.timeEntries).filter(x=>x&&OKID(x.id)&&OKDATE(x.date)&&OKID(x.part)&&fin(x.seconds)&&+x.seconds>0).map(x=>({id:x.id,date:x.date,part:x.part,seconds:+x.seconds,method:x.method=='timer'?'timer':'manual',createdAt:+x.createdAt||0,logId:OKID(x.logId)?x.logId:''}));
 const t=s.activeTimer;
 if(t&&OKID(t.part)&&OKDATE(t.date)){const sa=fin(t.startedAt)&&+t.startedAt>0?+t.startedAt:null;s.activeTimer={date:t.date,part:t.part,elapsedSec:Math.max(0,+t.elapsedSec||0),startedAt:t.running&&sa?sa:null,running:!!t.running&&!!sa,h:fin(t.h)?+t.h:null}}else s.activeTimer=null;
-s.timerBg=typeof s.timerBg==='string'?s.timerBg:'';
+s.analytics=s.analytics&&typeof s.analytics==='object'?s.analytics:{schemaVersion:1,formulaVersion:1,plans:{},audit:[]};s.analytics.schemaVersion=1;s.analytics.formulaVersion=1;s.analytics.plans=s.analytics.plans&&typeof s.analytics.plans==='object'?s.analytics.plans:{};s.analytics.audit=Array.isArray(s.analytics.audit)?s.analytics.audit.slice(-500):[];Object.keys(s.analytics.plans).forEach(d=>{if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(d)||!Array.isArray(s.analytics.plans[d])){delete s.analytics.plans[d];return}s.analytics.plans[d]=s.analytics.plans[d].filter(p=>p&&OKID(p.id)).map(p=>({id:p.id,name:cut(p.name,60),subjectId:OKID(p.subjectId)?p.subjectId:'',plannedMinutes:Math.max(0,Math.min(1440,+p.plannedMinutes||0)),plannedStart:fin(p.plannedStart)?+p.plannedStart:null,actualStart:fin(p.actualStart)?+p.actualStart:null,included:p.included!==false,status:['completed','partial'].includes(p.status)?p.status:''}))});s.timerBg=typeof s.timerBg==='string'?s.timerBg:'';
 return s}
 function norm(o){const s=Object.assign(blank(),o||{});const themeIds=['spider','batman','super','cyber','aurora','galaxy','synth','ocean','emerald','crimson','violet','gold','arctic','matrix','graphite'];if(!themeIds.includes(s.theme))s.theme=s.theme==='night'?'ocean':s.theme==='dark'?'graphite':'batman';if(!Array.isArray(s.parts)||s.parts.length!=7)s.parts=[[],[],[],[],[],[],[]];if(!Array.isArray(s.timeEntries))s.timeEntries=[];if(s.activeTimer&&!s.activeTimer.running&&!(+s.activeTimer.elapsedSec>0))s.activeTimer=null;if(s.blocks){s.blocks.forEach(b=>{const p={id:uid(),name:'پارت '+fa(s.parts[b.day].length+1),s:b.s,e:b.e};s.parts[b.day].push(p);s.tpl[p.id]={c:b.c,tp:b.tp||'',n:b.n||''}});delete s.blocks}return clean(s)}
 let S=(()=>{try{const j=localStorage.getItem(KEY);if(j)return norm(JSON.parse(j))}catch(e){}return norm()})();
 let pt,SY='local',ref=null,pushing=false,pend=false;
 const SYT={local:'ذخیره روی همین دستگاه',ok:'ذخیره‌شده روی حساب',err:'همگام‌سازی با حساب ممکن نشد'};
 function syncState(s){SY=s;const e=$('#sync');if(e)e.textContent=SYT[s]}
-function save(){S.ts=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));const o=JSON.parse(localStorage.getItem('planner-v1-autobk')||'null');if(S.courses.length&&(!o||Date.now()-o.ts>3*864e5))localStorage.setItem('planner-v1-autobk',JSON.stringify({ts:Date.now(),json:JSON.stringify(S)}))}catch(e){}clearTimeout(pt);pt=setTimeout(push,1500)}
+function save(){if(typeof analyticsEnsureDay==='function')analyticsEnsureDay(today());S.ts=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));const o=JSON.parse(localStorage.getItem('planner-v1-autobk')||'null');if(S.courses.length&&(!o||Date.now()-o.ts>3*864e5))localStorage.setItem('planner-v1-autobk',JSON.stringify({ts:Date.now(),json:JSON.stringify(S)}))}catch(e){}clearTimeout(pt);pt=setTimeout(push,1500)}
 let TIMER_BG_URL='',TIMER_BG_DB=null,TIMER_DRAFT=null;
 function bgDB(){return new Promise((resolve,reject)=>{if(TIMER_BG_DB)return resolve(TIMER_BG_DB);if(!('indexedDB'in window))return reject(Error('IndexedDB در این مرورگر در دسترس نیست.'));const q=indexedDB.open('study-planner-assets',1);q.onupgradeneeded=()=>{if(!q.result.objectStoreNames.contains('images'))q.result.createObjectStore('images')};q.onsuccess=()=>{TIMER_BG_DB=q.result;resolve(TIMER_BG_DB)};q.onerror=()=>reject(q.error||Error('خطا در باز کردن فضای تصویر'))})}
 async function blobDataURL(blob){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result));r.onerror=()=>reject(r.error);r.readAsDataURL(blob)})}
@@ -465,6 +466,24 @@ const prog=c=>{let a=0,b=0;c.topics.forEach(p=>{b+=p.w;a+=p.w*(p.st==2?1:p.st==1
 const dayParts=d=>[...S.parts[wd(d)]].sort((a,b)=>a.s-b.s);
 const asg=(d,p)=>{const k=d+'|'+p.id;return k in S.ov?(S.ov[k]||null):(S.tpl[p.id]||null)};
 const planOn=d=>dayParts(d).reduce((a,p)=>a+(asg(d,p)?p.e-p.s:0),0);
+function analyticsEnsureDay(date){
+ const A0=S.analytics||(S.analytics={schemaVersion:1,formulaVersion:1,plans:{},audit:[]}),old=Array.isArray(A0.plans[date])?A0.plans[date]:[];
+ const next=dayParts(date).map(p=>{const a=asg(date,p),prior=old.find(x=>x.id===p.id),has=S.timeEntries.some(x=>x.date===date&&x.part===p.id)||S.logs.some(x=>x.date===date&&x.part===p.id);
+ if(prior&&has)return prior;
+ return{id:p.id,name:p.name,subjectId:a?.c||'',plannedMinutes:p.e-p.s,plannedStart:p.s,actualStart:prior?.actualStart??null,included:!!a,status:prior?.status||(doneLog(date,p.id)?'completed':'')};
+ });
+ old.forEach(p=>{if(!next.some(x=>x.id===p.id)&&(S.timeEntries.some(x=>x.date===date&&x.part===p.id)||S.logs.some(x=>x.date===date&&x.part===p.id)))next.push(p)});
+ A0.plans[date]=next;
+ return next;
+}
+function analyticsDay(date){
+ const plans=Array.isArray(S.analytics?.plans?.[date])?S.analytics.plans[date]:null;
+ if(!plans)return {status:'no-data',score:null,components:{time:null,adherence:null,discipline:null},formulaVersion:1};
+ const sessions=S.timeEntries.filter(x=>x.date===date).map(x=>({id:x.id,partId:x.part,seconds:x.seconds}));
+ const completions={};plans.forEach(p=>{if(p.status)completions[p.id]=p.status});
+ return StudyAnalytics.calculateDay({plans,sessions,completions});
+}
+
 const findPart=id=>{for(const a of S.parts){const p=a.find(x=>x.id==id);if(p)return p}return null};
 /* فقط لاگِ «انجام شد» (ptick)؛ لاگ‌های تایمر/دستی نشانهٔ انجام‌شدن نیستند */
 const doneLog=(d,pid)=>S.logs.find(l=>l.src=='part'&&l.part==pid&&l.date==d);
@@ -483,7 +502,7 @@ function swapAcross(dA,a,dB,b){const A=asg(dA,findPart(a)),B=asg(dB,findPart(b))
 const sw=o=>{if(o.date==dA&&o.part==a){o.date=dB;o.part=b}else if(o.date==dB&&o.part==b){o.date=dA;o.part=a}};
 S.logs.forEach(sw);S.timeEntries.forEach(sw);
 [[dA,a],[dB,b]].forEach(([d,pid])=>{const p=findPart(pid),n=p&&asg(d,p);S.logs.forEach(l=>{if(l.date==d&&l.part==pid){l.c=n?n.c:'';l.tp=n?n.tp:'';if(l.src=='part'||l.src=='manual-time')l.h=~~(p.s/60)}});syncPartLog(d,pid)})}
-let M=null,D={},V='home',OC=null,CD=today(),STPER='30',PS='w',PMo=null,PYr=null,SD=null,SPD=wd(today()),PERR='',PVm='l',TSCREEN=false,WL=null,LT='',ANIM=true,FIRST=true,CEL='',DESK=false,DESKN=0,FOCUS_PID=null;
+let M=null,D={},V='home',OC=null,CD=today(),STPER='30',ST_FROM=addD(today(),-6),ST_TO=today(),AN_DIAG=null,PS='w',PMo=null,PYr=null,SD=null,SPD=wd(today()),PERR='',PVm='l',TSCREEN=false,WL=null,LT='',ANIM=true,FIRST=true,CEL='',DESK=false,DESKN=0,FOCUS_PID=null;
 const err=m=>{const e=$('#merr');if(e)e.textContent=m;return false};
 async function wake(){try{if(!WL&&(DESK||(TSCREEN&&S.activeTimer&&S.activeTimer.running))&&navigator.wakeLock){WL=await navigator.wakeLock.request('screen');WL.addEventListener('release',()=>{WL=null})}}catch(e){WL=null}}
 function relWake(){try{if(WL){WL.release();WL=null}}catch(e){WL=null}}
@@ -607,20 +626,29 @@ return`<h1>آمار و تحلیل عملکرد</h1>
 <div class=card><h2>الگوی روزهای هفته</h2>${DAYS.map((n,i)=>`<div class=row><span style="width:64px">${n}</span><div class="bar grow"><i style="width:${weekday[i]/Math.max(1,...weekday)*100}%"></i></div><span class="muted sm" style="width:58px;text-align:end">${weekday[i]?fh(weekday[i]):'—'}</span></div>`).join('')}</div>
 <div class=grid2><div class=card><div class="muted sm">بهترین روز ثبت‌شده</div><b>${best?fj(best[0],1):'—'}</b><div class="muted sm">${best?fmin(best[1]):'هنوز داده‌ای نیست'}</div></div><div class=card><div class="muted sm">پربازده‌ترین ساعت شروع</div><b>${bh!=null?fa(bh)+':۰۰':'—'}</b><div class="muted sm">بر اساس ساعت شروع پارت یا تایمر</div></div></div>`}
 function statsV(){
- const original=S,allLogs=Array.isArray(original.logs)?original.logs:[],allEntries=Array.isArray(original.timeEntries)?original.timeEntries:[];
- const validDate=x=>typeof x?.date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x.date)&&Number.isFinite(parse(x.date).getTime());
- const safeLogs=allLogs.filter(x=>validDate(x)&&Number.isFinite(+x.min)).map(x=>({...x,min:+x.min}));
- const safeEntries=allEntries.filter(x=>validDate(x)&&Number.isFinite(+(x.seconds??0))).map(x=>({...x,seconds:+x.seconds||0}));
- const days=STPER==='all'?0:+STPER,from=days?addD(today(),1-days):'';
- try{
-  S={...original,logs:days?safeLogs.filter(x=>x.date>=from&&x.date<=today()):safeLogs,timeEntries:days?safeEntries.filter(x=>x.date>=from&&x.date<=today()):safeEntries};
-  let body=statsVBase();
-  if(STPER!=='30')body=body.replaceAll('۳۰ روز اخیر','بازه‌ی انتخابی').replaceAll('شش ماه اخیر','ماه‌های اخیر');
-  const opts=[['7','۷ روز'],['30','۳۰ روز'],['90','۹۰ روز'],['365','یک سال'],['all','همه‌ی سوابق']];
-  const bar='<div class="card"><div class="row"><b class=grow>بازه‌ی تحلیل</b><span class=tag>'+(STPER==='all'?'تمام سوابق':'از '+fj(from,1)+' تا امروز')+'</span></div><div class=stats-period>'+opts.map(([k,n])=>'<button class="chip '+(STPER===k?'on':'')+'" data-a=statsPeriod data-k='+k+'>'+n+'</button>').join('')+'</div><p class="muted sm">تمام شاخص‌های اصلی بر اساس بازه‌ی انتخابی محاسبه می‌شوند؛ سوابق اصلی بدون تغییر باقی می‌مانند.</p></div>';
-  return body.replace('<h1>آمار و تحلیل عملکرد</h1>','<div class=stats-heading><div><h1>آمار و تحلیل</h1><p class="muted sm">روند، استمرار، توزیع زمان و عملکرد درس‌ها</p></div></div>'+bar);
- }catch(err){console.error('Stats render failed:',err);return '<div class=card><h1>آمار و تحلیل</h1><p>نمایش آمار با خطا روبه‌رو شد. داده‌های ثبت‌شده دست‌نخورده باقی مانده‌اند.</p><p class="muted sm">کد خطا: '+esc(String(err&&err.message||err||'خطای نامشخص').slice(0,180))+'</p></div>'}
- finally{S=original}
+ const from=ST_FROM||addD(today(),-6),to=ST_TO||today(),valid=/^\\d{4}-\\d{2}-\\d{2}$/.test(from)&&/^\\d{4}-\\d{2}-\\d{2}$/.test(to)&&from<=to;
+ if(!valid)return '<div class=card><h2>بازه نامعتبر</h2><p>تاریخ شروع باید قبل از تاریخ پایان باشد.</p></div>';
+ const count=diff(to,from)+1;if(count>3660)return '<div class=card><h2>بازه بیش از حد بزرگ است</h2><p>برای حفظ سرعت، بازه را به حداکثر ده سال محدود کن.</p></div>';
+ const days=Array.from({length:count},(_,i)=>{const d=addD(from,i),r=analyticsDay(d);return{date:d,...r}});
+ const scored=days.filter(x=>x.status==='scored'),avg=scored.length?scored.reduce((a,x)=>a+x.score,0)/scored.length:null;
+ const best=scored.length?scored.reduce((a,b)=>b.score>a.score?b:a):null,worst=scored.length?scored.reduce((a,b)=>b.score<a.score?b:a):null;
+ const totalMinutes=S.timeEntries.filter(x=>x.date>=from&&x.date<=to).reduce((a,x)=>a+(+x.seconds||0)/60,0);
+ const last=days.slice(-Math.min(35,days.length)),max=Math.max(100,...last.filter(x=>x.status==='scored').map(x=>x.score));
+ const points=last.map((x,i)=>{const px=22+i*(656/Math.max(1,last.length-1)),py=x.status==='scored'?154-(x.score/max)*122:154;return{x:px,y:py,d:x.date,v:x.score,status:x.status}}),line=points.filter(x=>x.status==='scored').map((p,i)=>(i?'L':'M')+p.x.toFixed(1)+' '+p.y.toFixed(1)).join(' ');
+ const bars=last.map((x,i)=>{const w=660/last.length,gap=Math.min(4,w*.15),bw=Math.max(2,w-gap),h=x.status==='scored'?Math.max(2,x.score*1.2):0;return '<rect x="'+(18+i*w)+'" y="'+(154-h)+'" width="'+bw+'" height="'+h+'" rx="3" fill="var(--accent)" opacity="'+(x.status==='scored'?'.88':'.12')+'"><title>'+fj(x.date,1)+' · '+(x.status==='scored'?fa(Math.round(x.score))+'٪':'بدون داده')+'</title></rect>'}).join('');
+ const heat=days.slice(-56).map(x=>'<div class="an-heat '+(x.status==='scored'?'':'empty')+'" style="--v:'+(x.status==='scored'?x.score/100:0)+'" title="'+fj(x.date,1)+' · '+(x.status==='scored'?fa(Math.round(x.score))+'٪':'بدون داده')+'"><b>'+fa(parse(x.date).getDate())+'</b></div>').join('');
+ const comp=(key)=>{const a=scored.filter(x=>x.components&&x.components[key]!=null);return a.length?a.reduce((n,x)=>n+x.components[key],0)/a.length:null};
+ const pct=x=>x==null?'—':fa(Math.round(x))+'٪';
+ const diag=AN_DIAG?'<div class="an-glass an-diagnostic"><div class=row><b class=grow>گزارش آخرین تست سلامت</b><span class="tag">'+fa(AN_DIAG.passed)+' از '+fa(AN_DIAG.total)+'</span></div>'+AN_DIAG.tests.map(t=>'<div class="an-test"><span>'+(t.ok?'✓':'!')+'</span><div><b>'+esc(t.name)+'</b><small>'+esc(t.detail|| (t.ok?'موفق':'ناموفق'))+'</small></div></div>').join('')+'</div>':'';
+ return '<div class="an-wrap"><div class="an-head"><div><div class=an-kicker>STUDY ANALYTICS · ENGINE V1</div><h1>بازدهی و تحلیل عملکرد</h1><p>اندازه‌گیری عملکرد واقعی بر اساس برنامه، زمان و نظم</p></div><button class="an-glass an-test-btn" data-a=analyticsTest>اجرای تست سلامت</button></div>'+
+ '<div class="an-glass an-range"><div class=row><b class=grow>بازهٔ تحلیل</b><span class=an-range-label>'+fj(from,1)+' تا '+fj(to,1)+'</span></div><div class=an-presets><button class=chip data-a=analyticsPreset data-k=7>۷ روز</button><button class=chip data-a=analyticsPreset data-k=30>۳۰ روز</button><button class=chip data-a=analyticsPreset data-k=90>۹۰ روز</button><button class=chip data-a=analyticsPreset data-k=365>یک سال</button><button class=chip data-a=analyticsPreset data-k=all>همهٔ سوابق معتبر</button></div><div class=an-dates><label>از تاریخ<input type=date data-analytics-date=start value="'+from+'"></label><label>تا تاریخ<input type=date data-analytics-date=end value="'+to+'"></label></div></div>'+
+ '<div class="an-hero"><div class=an-hero-orb></div><div class=an-hero-label>میانگین بازدهی در بازه</div><div class=an-score>'+(avg==null?'—':fa(Math.round(avg)))+'<small>'+(avg==null?'':'٪')+'</small></div><div class=an-hero-foot><span>'+fa(scored.length)+' روز دارای داده</span><span>'+fh(totalMinutes)+' ساعت مطالعهٔ ثبت‌شده</span></div><div class=an-formula>۴۰٪ زمان · ۴۰٪ اجرای پارت · ۲۰٪ نظم زمانی</div></div>'+
+ '<div class=an-kpis><div class=an-glass><small>بهترین روز</small><b>'+(best?fa(Math.round(best.score))+'٪':'—')+'</b><span>'+(best?fj(best.date,1):'داده‌ای نیست')+'</span></div><div class=an-glass><small>ضعیف‌ترین روز</small><b>'+(worst?fa(Math.round(worst.score))+'٪':'—')+'</b><span>'+(worst?fj(worst.date,1):'داده‌ای نیست')+'</span></div><div class=an-glass><small>مجموع مطالعه</small><b>'+fh(totalMinutes)+'</b><span>ساعت در بازه</span></div></div>'+
+ '<div class=an-glass><div class=row><b class=grow>روند بازدهی</b><span class=an-muted>آخرین '+fa(last.length)+' روز بازه</span></div><svg class=an-chart viewBox="0 0 700 180" role=img aria-label="نمودار روند بازدهی"><defs><linearGradient id=anFill x1=0 y1=0 x2=0 y2=1><stop offset=0 stop-color="var(--accent)" stop-opacity=".35"/><stop offset=1 stop-color="var(--accent)" stop-opacity="0"/></linearGradient></defs><path d="M18 154H682" stroke="currentColor" opacity=".12"/><path d="'+(line?line+' L '+points[points.length-1].x+' 154 L '+points[0].x+' 154 Z':'')+'" fill="url(#anFill)"/><path d="'+line+'" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>'+points.filter(x=>x.status==='scored').map(p=>'<circle cx="'+p.x+'" cy="'+p.y+'" r="3.5" fill="var(--accent)"><title>'+fj(p.d,1)+' · '+fa(Math.round(p.v))+'٪</title></circle>').join('')+'</svg><div class=an-chart-legend><span>۰٪</span><span>۱۰۰٪</span></div></div>'+
+ '<div class=an-glass><b>ترکیب مؤلفه‌ها</b><div class=an-components><div><span>تحقق زمان</span><b>'+pct(comp('time'))+'</b><i><em style="width:'+(comp('time')||0)+'%"></em></i></div><div><span>اجرای پارت‌ها</span><b>'+pct(comp('adherence'))+'</b><i><em style="width:'+(comp('adherence')||0)+'%"></em></i></div><div><span>نظم زمانی</span><b>'+pct(comp('discipline'))+'</b><i><em style="width:'+(comp('discipline')||0)+'%"></em></i></div></div><p class=an-muted>اگر ساعت شروع پارت ثبت نشده باشد، مؤلفهٔ نظم از محاسبه خارج و وزن دو مؤلفهٔ دیگر متناسب بازتوزیع می‌شود.</p></div>'+
+ '<div class=an-glass><div class=row><b class=grow>تقویم بازدهی</b><span class=an-muted>خانه‌های پررنگ‌تر = بازدهی بالاتر</span></div><div class=an-heatmap>'+heat+'</div></div>'+
+ '<div class=an-glass><div class=row><b class=grow>مرکز سلامت موتور</b><span class=tag>نسخهٔ فرمول ۱</span></div><p class=an-muted>تست‌ها با داده‌های آزمایشی مستقل اجرا می‌شوند و اطلاعات واقعی را تغییر نمی‌دهند.</p><button class="btn p" data-a=analyticsTest>اجرای '+fa(10)+' تست مرجع</button>'+diag+'</div>'+
+ '<div class=an-glass><b>وضعیت پوشش داده‌ها</b><p class=an-muted>فقط روزهایی امتیاز معتبر می‌گیرند که برنامهٔ همان روز از زمان فعال‌شدن موتور ثبت شده باشد. سوابق قدیمی بدون تصویر معتبر از برنامه، به‌اشتباه امتیازدهی نمی‌شوند.</p><div class=an-meta>نسخه موتور '+StudyAnalytics.VERSION+' · نسخه فرمول ۱ · '+fa(days.filter(x=>x.status==='no-data').length)+' روز بدون دادهٔ معتبر</div></div></div>';
 }
 function partRow(p,i){return`<div class=prow data-pid=${p.id}><div class=prow-top><span class=prow-ix>${fa(i+1)}</span><input class=prow-name data-pf=name data-pid=${p.id} value="${esc(p.name)}" aria-label="نام پارت"><button class="btn" style="padding:5px 9px;min-height:36px" data-a=dupPart data-pid=${p.id} aria-label="کپی پارت">کپی</button><button class=prow-del data-a=delpart data-pid=${p.id} aria-label="حذف پارت">${ico('trash',16)}</button></div><div class=prow-time><label class=ptf><span>شروع</span><input type=time data-pf=s data-pid=${p.id} value="${tm(p.s)}"></label><span class=prow-sep>تا</span><label class=ptf><span>پایان</span><input type=time data-pf=e data-pid=${p.id} value="${tm(p.e)}"></label></div><div class=prow-dur>${ico('clock',12)}${fmin(p.e-p.s)}</div></div>`}
 function partsCard(){const d=SPD,ps=[...S.parts[d]].sort((a,b)=>a.s-b.s),tot=ps.reduce((s,p)=>s+(p.e-p.s),0);
@@ -820,7 +848,7 @@ timerBgClear(){removeTimerBg().then(()=>{S.timerBg='';save();render()})},
 downloadbk(){const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'}),u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='study-planner-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)},
 importfile(){const f=$('#backupFile');if(f)f.click()},
 mvgo(){const d2=$('#mvd').value,q=$('#mvp').value;if(!q)return err('پارت مقصد را انتخاب کن.');swapAcross(D.date,D.pid,d2,q);M=null;save();render()},
-statsPeriod(){STPER=D.k;render()},pv(){PS=D.k;render()},mnav(){let[y,m]=PMo;m+=+D.k;if(m>12){m=1;y++}if(m<1){m=12;y--}PMo=[y,m];SD=null;render()},ynav(){PYr+=+D.k;render()},sday(){SD=D.d;render()},
+statsPeriod(){STPER=D.k;render()},analyticsPreset(){const k=D.k==='all'?'all':+D.k;ST_TO=today();if(k==='all'){const dates=Object.keys(S.analytics?.plans||{}).sort();ST_FROM=dates[0]||today()}else ST_FROM=addD(ST_TO,-Math.max(0,k-1));render()},analyticsTest(){AN_DIAG=StudyAnalytics.diagnostics();render();if(AN_DIAG.failed.length)toast('تست موتور بازدهی خطا دارد.');else toast('تمام تست‌های موتور بازدهی موفق بودند.')},pv(){PS=D.k;render()},mnav(){let[y,m]=PMo;m+=+D.k;if(m>12){m=1;y++}if(m<1){m=12;y--}PMo=[y,m];SD=null;render()},ynav(){PYr+=+D.k;render()},sday(){SD=D.d;render()},
 mlog(){const m=+nd($('#lm').value),c=$('#lc').value,e=$('#lerr');if(D.d>today()){if(e)e.textContent='برای روزهای آینده نمی‌شود ثبت کرد.';return}if(!c){if(e)e.textContent='اول در بخش «درس‌ها» یک درس اضافه کن.';return}if(!(m>0)){if(e)e.textContent='مدت را به دقیقه وارد کن.';return}S.logs.push({id:uid(),date:D.d,c,tp:'',min:m,src:'manual'});save();render()},dlg(){S.logs=S.logs.filter(l=>l.id!=D.id);save();render()},
 opc(){OC=D.id;render();scrollTo(0,0)},bc(){OC=null;render()},newc(){courseForm()},editc(){courseForm(C(D.id))},
 ts(){const p=T_(D.c,D.p);p.st=(p.st+1)%3;save();render()},tw(){const p=T_(D.c,D.p);p.w=p.w%3+1;save();render()},
@@ -840,7 +868,7 @@ msave(){if(M.s()===true){M=null;save();render()}},
 mdel(el){if(!el.dataset.sure){el.dataset.sure=1;el.textContent='برای تأیید دوباره بزن';return}M.d();M=null;save();render()}};
 document.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(!el||/^(SELECT|INPUT)$/.test(el.tagName))return;D=el.dataset;const f=A[D.a];if(f)f(el,e)});
 document.addEventListener('input',e=>{const t=e.target;if(t.dataset.num){const v=nd(t.value);if(v!==t.value)t.value=v}if(t.dataset.a==='timerDim'){const v=Math.max(15,Math.min(85,+t.value||48)),pv=$('#timerBgPreview'),lb=$('#timerDimLabel');if(pv)pv.style.backgroundImage=`linear-gradient(rgba(8,13,25,${v/100}),rgba(8,13,25,${v/100})),${TIMER_BG_URL?`url('${TIMER_BG_URL}')`:'linear-gradient(135deg,#26344f,#56658c 55%,#25344d)'}`;if(lb)lb.textContent=fa(v)+'٪'}});
-document.addEventListener('change',e=>{const t=e.target,s=t.dataset.set;
+document.addEventListener('change',e=>{const t=e.target,s=t.dataset.set;if(t.dataset.analyticsDate){if(t.dataset.analyticsDate==='start')ST_FROM=t.value;else ST_TO=t.value;render();return}
 if(t.id=='timerBgSettingsInput'&&t.files&&t.files[0]){const file=t.files[0],st=$('#bgUploadStatus');if(st)st.textContent='در حال بهینه‌سازی و ذخیره تصویر…';uploadTimerBg(file).then(()=>{const e=$('#bgUploadStatus');if(e)e.textContent='تصویر با موفقیت ذخیره شد و برای تمام تایمرها فعال است.'}).catch(e=>{const q=$('#bgUploadStatus');if(q)q.textContent=e.message||'ذخیره تصویر ناموفق بود.'});t.value='';return}
 if(t.dataset.a=='timerDim'){S.timerDim=Math.max(15,Math.min(85,+t.value||48));save();const pv=$('#timerBgPreview');if(pv)pv.style.backgroundImage=`linear-gradient(rgba(8,13,25,${S.timerDim/100}),rgba(8,13,25,${S.timerDim/100})),${TIMER_BG_URL?`url('${TIMER_BG_URL}')`:'linear-gradient(135deg,#26344f,#56658c 55%,#25344d)'}`;const lb=$('#timerDimLabel');if(lb)lb.textContent=fa(S.timerDim)+'٪';return}
 if(s==='fx'){S.fx=t.checked;save();render();return}
@@ -875,7 +903,7 @@ setInterval(()=>{if(!document.hidden){timerUpdate();deskTick()}},250);
 let DT=null;
 document.addEventListener('touchstart',e=>{DT=DESK&&!e.target.closest('button')?e.touches[0].clientX:null},{passive:true});
 document.addEventListener('touchend',e=>{if(DT==null)return;const dx=e.changedTouches[0].clientX-DT;DT=null;if(Math.abs(dx)>60){S.deskFace=((S.deskFace||0)+(dx<0?1:2))%3;save();render()}},{passive:true});
-ANIM=true;render();loadTimerBg();initRemote();
+analyticsEnsureDay(today());save();ANIM=true;render();loadTimerBg();initRemote();
 {const h0=location.hash.slice(1);if(h0=='timer')setTimeout(()=>A.quickStart(),400);else if(h0=='desk')setTimeout(()=>A.deskOpen(),200)}
 </script>
 
