@@ -13,3 +13,4 @@ jobs:
         with:
           node-version: 20
       - run: node tests/analytics-engine.test.mjs
+      - run: node tests/backup-api.test.mjs
