@@ -14,10 +14,12 @@ export async function onRequest({ request, env }) {
     let body;
     try { body = await request.json(); } catch { return reply({ error: "Invalid JSON" }, 400); }
     const { id, iv, data, ts } = body || {};
-    if (!/^[a-f0-9]{64}$/.test(id || "") || typeof iv !== "string" || typeof data !== "string" || !Number.isFinite(ts)) {
+    const validIv = typeof iv === "string" && /^[A-Za-z0-9+/]{16}$/.test(iv);
+    const validData = typeof data === "string" && data.length >= 24 && data.length % 4 === 0 && /^[A-Za-z0-9+/]+={0,2}$/.test(data);
+    if (!/^[a-f0-9]{64}$/.test(id || "") || !validIv || !validData || !Number.isSafeInteger(ts) || ts <= 0) {
       return reply({ error: "Invalid backup payload" }, 400);
     }
-    if (iv.length > 64 || data.length > 1800000) return reply({ error: "Backup too large" }, 413);
+    if (data.length > 1800000) return reply({ error: "Backup too large" }, 413);
     await env.BACKUPS.put("backup:" + id, JSON.stringify({ id, iv, data, ts }));
     return reply({ ok: true, ts });
   }
