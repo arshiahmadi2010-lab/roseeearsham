@@ -1,5 +1,5 @@
-// Update release: 2026-11-26-selector-declaration-hotfix-v24
-const CACHE='planner-pwa-v24';
+// Update release: 2026-11-26-settings-groups-v25
+const CACHE='planner-pwa-v25';
 const CORE=['/','/index.html','/manifest.webmanifest','/icon.svg'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE))));
 self.addEventListener('message',e=>{if(e.data&&e.data.type==='SKIP_WAITING')self.skipWaiting();});
