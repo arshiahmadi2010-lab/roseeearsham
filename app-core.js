@@ -45,7 +45,7 @@ s.logs=arr(s.logs).filter(l=>l&&OKID(l.id)&&OKDATE(l.date)&&fin(l.min)).map(l=>{
 s.timeEntries=arr(s.timeEntries).filter(x=>x&&OKID(x.id)&&OKDATE(x.date)&&OKID(x.part)&&fin(x.seconds)&&+x.seconds>0).map(x=>({id:x.id,date:x.date,part:x.part,seconds:+x.seconds,method:x.method=='timer'?'timer':'manual',createdAt:+x.createdAt||0,logId:OKID(x.logId)?x.logId:''}));
 const t=s.activeTimer;
 if(t&&OKID(t.part)&&OKDATE(t.date)){const sa=fin(t.startedAt)&&+t.startedAt>0?+t.startedAt:null;s.activeTimer={date:t.date,part:t.part,elapsedSec:Math.max(0,+t.elapsedSec||0),startedAt:t.running&&sa?sa:null,running:!!t.running&&!!sa,h:fin(t.h)?+t.h:null}}else s.activeTimer=null;
-s.analytics=s.analytics&&typeof s.analytics==='object'?s.analytics:{schemaVersion:1,formulaVersion:1,plans:{},audit:[]};s.analytics.schemaVersion=1;s.analytics.formulaVersion=1;s.analytics.plans=s.analytics.plans&&typeof s.analytics.plans==='object'?s.analytics.plans:{};s.analytics.audit=Array.isArray(s.analytics.audit)?s.analytics.audit.slice(-500):[];s.analytics.emergencies=Array.isArray(s.analytics.emergencies)?s.analytics.emergencies.slice(-100).map(e=>({id:OKID(e.id)?e.id:'',from:OKDATE(e.from)?e.from:'',to:OKDATE(e.to)?e.to:'',reason:cut(e.reason,200),createdAt:+e.createdAt||0,canceledAt:+e.canceledAt||0,parts:Array.isArray(e.parts)?e.parts.filter(p=>p&&OKDATE(p.date)&&OKID(p.partId)).map(p=>({date:p.date,partId:p.partId,...(typeof p.wasIncluded==='boolean'?{wasIncluded:p.wasIncluded}:{})})):[]})).filter(e=>e.id&&e.from&&e.to):[];Object.keys(s.analytics.plans).forEach(d=>{if(!StudyAnalytics.isISODate(d)||!Array.isArray(s.analytics.plans[d])){delete s.analytics.plans[d];return}s.analytics.plans[d]=s.analytics.plans[d].filter(p=>p&&OKID(p.id)).map(p=>({id:p.id,name:cut(p.name,60),subjectId:OKID(p.subjectId)?p.subjectId:'',plannedMinutes:Math.max(0,Math.min(1440,+p.plannedMinutes||0)),plannedStart:fin(p.plannedStart)?+p.plannedStart:null,actualStart:fin(p.actualStart)?+p.actualStart:null,included:p.included!==false,emergencyId:OKID(p.emergencyId)?p.emergencyId:'',kind:p.kind==='unscheduled'?'unscheduled':'scheduled',deleted:!!p.deleted,lastProposed:p.lastProposed&&typeof p.lastProposed==='object'?{name:cut(p.lastProposed.name,60),plannedMinutes:+p.lastProposed.plannedMinutes||0,plannedStart:fin(p.lastProposed.plannedStart)?+p.lastProposed.plannedStart:null}:null,status:['completed','partial'].includes(p.status)?p.status:''}))});s.timerBg=typeof s.timerBg==='string'?s.timerBg:'';
+s.analytics=s.analytics&&typeof s.analytics==='object'?s.analytics:{schemaVersion:1,formulaVersion:1,plans:{},audit:[]};s.analytics.schemaVersion=1;s.analytics.formulaVersion=1;s.analytics.plans=s.analytics.plans&&typeof s.analytics.plans==='object'?s.analytics.plans:{};s.analytics.audit=Array.isArray(s.analytics.audit)?s.analytics.audit.slice(-500):[];s.analytics.emergencies=Array.isArray(s.analytics.emergencies)?s.analytics.emergencies.slice(-100).map(e=>({id:OKID(e.id)?e.id:'',from:OKDATE(e.from)?e.from:'',to:OKDATE(e.to)?e.to:'',reason:cut(e.reason,200),createdAt:+e.createdAt||0,canceledAt:+e.canceledAt||0,parts:Array.isArray(e.parts)?e.parts.filter(p=>p&&OKDATE(p.date)&&OKID(p.partId)).map(p=>({date:p.date,partId:p.partId,...(typeof p.wasIncluded==='boolean'?{wasIncluded:p.wasIncluded}:{})})):[]})).filter(e=>e.id&&e.from&&e.to):[];Object.keys(s.analytics.plans).forEach(d=>{if(!StudyAnalytics.isISODate(d)||!Array.isArray(s.analytics.plans[d])){delete s.analytics.plans[d];return}s.analytics.plans[d]=s.analytics.plans[d].filter(p=>p&&OKID(p.id)).map(p=>({id:p.id,name:cut(p.name,60),subjectId:OKID(p.subjectId)?p.subjectId:'',plannedMinutes:Math.max(0,Math.min(1440,+p.plannedMinutes||0)),plannedStart:fin(p.plannedStart)?+p.plannedStart:null,actualStart:fin(p.actualStart)?+p.actualStart:null,included:p.included!==false,emergencyId:OKID(p.emergencyId)?p.emergencyId:'',kind:p.kind==='unscheduled'?'unscheduled':'scheduled',deleted:!!p.deleted,reconstructed:!!p.reconstructed||s.analytics.audit.some(e=>e&&e.type==='historical-snapshot-backfilled'&&e.date===d),lastProposed:p.lastProposed&&typeof p.lastProposed==='object'?{name:cut(p.lastProposed.name,60),plannedMinutes:+p.lastProposed.plannedMinutes||0,plannedStart:fin(p.lastProposed.plannedStart)?+p.lastProposed.plannedStart:null}:null,status:['completed','partial'].includes(p.status)?p.status:''}))});s.timerBg=typeof s.timerBg==='string'?s.timerBg:'';
 return s}
 function norm(o){const s=Object.assign(blank(),o||{});const themeIds=['spider','batman','super','cyber','aurora','galaxy','synth','ocean','emerald','crimson','violet','gold','arctic','matrix','graphite'];if(!themeIds.includes(s.theme))s.theme=s.theme==='night'?'ocean':s.theme==='dark'?'graphite':'batman';if(!Array.isArray(s.parts)||s.parts.length!=7)s.parts=[[],[],[],[],[],[],[]];if(!Array.isArray(s.timeEntries))s.timeEntries=[];if(s.activeTimer&&!s.activeTimer.running&&!(+s.activeTimer.elapsedSec>0))s.activeTimer=null;if(s.blocks){s.blocks.forEach(b=>{const p={id:uid(),name:'پارت '+fa(s.parts[b.day].length+1),s:b.s,e:b.e};s.parts[b.day].push(p);s.tpl[p.id]={c:b.c,tp:b.tp||'',n:b.n||''}});delete s.blocks}return clean(s)}
 let S=(()=>{try{const j=localStorage.getItem(KEY);if(j)return norm(JSON.parse(j))}catch(e){}return norm()})();
@@ -53,13 +53,14 @@ let pt,SY='local',ref=null,pushing=false,pend=false;
 const SYT={local:'ذخیره روی همین دستگاه',ok:'ذخیره‌شده روی حساب',err:'همگام‌سازی با حساب ممکن نشد'};
 function syncState(s){SY=s;const e=$('#sync');if(e)e.textContent=SYT[s]}
 function analyticsEnsureActivityDays(){
- if(typeof analyticsEnsureDay!=='function'||!S.analytics)return;
+ if(!S.analytics)return;
  const dates=[...new Set([...(S.logs||[]).map(x=>x.date),...(S.timeEntries||[]).map(x=>x.date)])]
   .filter(d=>StudyAnalytics.isISODate(d)&&d<=today()).sort();
- for(const d of dates){
-  if(Array.isArray(S.analytics.plans?.[d]))continue;
-  const plans=analyticsEnsureDay(d);
-  if(plans.length)S.analytics.audit.push({type:'historical-snapshot-backfilled',date:d,at:Date.now(),source:'available-plan-and-study-records'});
+ for(const date of dates){
+  if(Array.isArray(S.analytics.plans?.[date]))continue;
+  if(!(S.analytics.audit||[]).some(e=>e&&e.type==='historical-snapshot-unavailable'&&e.date===date)){
+   S.analytics.audit.push({type:'historical-snapshot-unavailable',date,at:Date.now(),source:'no-immutable-plan-snapshot'});
+  }
  }
  S.analytics.audit=(S.analytics.audit||[]).slice(-500);
 }
@@ -132,6 +133,7 @@ function analyticsDay(date){
  if(date>today())return {status:'pending',score:null,components:{time:null,adherence:null,discipline:null},formulaVersion:1};
  const plans=Array.isArray(S.analytics?.plans?.[date])?S.analytics.plans[date]:null;
  if(!plans)return {status:'no-data',score:null,components:{time:null,adherence:null,discipline:null},formulaVersion:1};
+ if(plans.some(p=>p.reconstructed))return {status:'unverified',score:null,components:{time:null,adherence:null,discipline:null},formulaVersion:1};
  const sessions=S.timeEntries.filter(x=>x.date===date).map(x=>({id:x.id,partId:x.part,seconds:x.seconds}));
  const completions={};plans.forEach(p=>{if(p.status)completions[p.id]=p.status});
  return StudyAnalytics.calculateDay({plans,sessions,completions});
