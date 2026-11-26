@@ -34,10 +34,10 @@ assert.match(app,/plans\.some\(p=>p\.reconstructed\)/,'Unverifiable reconstructe
 assert.ok(app.includes('StudyAnalytics.isISODate(x)'),'Imported dates use strict calendar validation');
 assert.match(views,/reconstructedSnapshotNotice/,'Analytics explains excluded reconstructed historical scores');
 const activityStart=app.indexOf('function analyticsEnsureActivityDays(){');
-const activityEnd=app.indexOf('\\n}',activityStart);
+const activityEnd=app.indexOf(String.fromCharCode(10)+'}',activityStart);
 const activity=activityStart>=0&&activityEnd>activityStart?app.slice(activityStart,activityEnd):'';
 assert.ok(activityStart>=0&&activityEnd>activityStart,'Historical activity check exists');
-assert.doesNotMatch(activity,/analyticsEnsureDay\\(date\\)/,'Missing historical plans are never generated from current recurring templates');
+assert.ok(!activity.includes('analyticsEnsureDay(date)'),'Missing historical plans are never generated from current recurring templates');
 assert.ok(app.includes("['__proto__','prototype','constructor'].includes(x)"),'Reserved object keys are rejected as IDs');
 assert.ok(app.includes('ic:cut(c.ic,8).replace'),'Imported course icons are sanitized');
 assert.ok(!app.includes("S.logs.forEach(l=>{if(l.part==p.id&&l.src=='part'){syncPartLog(l.date,p.id)}})"),'Editing recurring parts does not rewrite historical completion logs');
