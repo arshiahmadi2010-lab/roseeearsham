@@ -26,7 +26,7 @@ assert.match(html,/S\.activeTimer\.elapsedSec=timerSeconds\(\);S\.activeTimer\.r
 const css=await readFile(new URL('../analytics.css',import.meta.url),'utf8');
 assert.match(css,/\.an-wrap/,'Glass dashboard styles exist');
 const sw=await readFile(new URL('../sw.js',import.meta.url),'utf8');
-assert.match(sw,/planner-pwa-v29/,'Service worker cache was bumped');
+assert.match(sw,/planner-pwa-v30/,'Service worker cache was bumped');
 assert.match(sw,/analytics-engine\.js/,'Service worker caches the engine');
 assert.match(sw,/analytics\.css/,'Service worker caches analytics styles');
 console.log('Analytics engine tests:',result.passed+'/'+result.total,'passed; app syntax and PWA assets verified');
