@@ -471,6 +471,11 @@ function analyticsEnsureDay(date){
  const next=dayParts(date).map(p=>{
   const a=asg(date,p),prior=old.find(x=>x.id===p.id),has=S.timeEntries.some(x=>x.date===date&&x.part===p.id)||S.logs.some(x=>x.date===date&&x.part===p.id);
   const proposed={id:p.id,name:p.name,subjectId:a?.c||'',plannedMinutes:p.e-p.s,plannedStart:p.s,actualStart:prior?.actualStart??null,included:prior?.emergencyId?false:!!a,emergencyId:prior?.emergencyId||'',kind:'scheduled',status:doneLog(date,p.id)?'completed':'',createdAt:prior?.createdAt||Date.now()};
+  if(prior&&!prior.subjectId&&a?.c&&!has){
+   const baseline=date===today()?Math.max(p.s,nowMin()):p.s;
+   proposed.plannedStart=baseline;proposed.plannedMinutes=Math.max(0,p.e-baseline);proposed.included=proposed.plannedMinutes>0;
+   A0.audit.push({type:'subject-assigned-midday',date,partId:p.id,at:Date.now(),plannedMinutes:proposed.plannedMinutes,baseline});
+  }
   if(prior&&has){
    const changed=prior.plannedMinutes!==proposed.plannedMinutes||prior.plannedStart!==proposed.plannedStart||prior.name!==proposed.name;
    const sameLast=prior.lastProposed&&prior.lastProposed.plannedMinutes===proposed.plannedMinutes&&prior.lastProposed.plannedStart===proposed.plannedStart&&prior.lastProposed.name===proposed.name;
@@ -815,7 +820,16 @@ editp(){partForm(D.date,D.pid)},
 timeMenu(){timeMenu(D.date,D.pid)},
 chooseManual(){const d=M.date,pid=M.pid;M=null;manualTimeForm(d,pid)},
 chooseTimer(){const d=M.date,pid=M.pid;if(d!=today())return err('تایمر زنده فقط برای پارت‌های امروز فعال است.');const t=S.activeTimer;if(t&&(t.date!=d||t.part!=pid))return err('یک تایمر دیگر فعال است؛ از نوار تایمر پایین صفحه آن را باز یا لغو کن.');M=null;openTimer(d,pid)},
-startPart(){openTimer(D.date,D.pid)},
+startPart(){
+ const p=findPart(D.pid),a=p&&asg(D.date,p);if(!p)return;
+ if(!a){M={date:D.date,pid:D.pid,t:'پارت بدون درس',b:'<p class="muted sm">این پارت هنوز درسی ندارد. مشخص کن مطالعهٔ آن وارد شاخص بازدهی شود یا فقط زمانش ثبت شود.</p><label class=chk><input id=emptyInclude type=checkbox> در شاخص بازدهی محاسبه شود</label><label>درس (در صورت ورود به شاخص)</label><select id=emptyCourse>'+S.courses.map(c=>'<option value="'+c.id+'">'+esc(c.name)+'</option>').join('')+'</select>',s(){
+  const include=$('#emptyInclude')?.checked,course=$('#emptyCourse')?.value||'';
+  if(include&&!course)return err('برای ورود به شاخص، ابتدا یک درس انتخاب کن.');
+  if(include)S.ov[D.date+'|'+D.pid]={c:course,tp:'',n:''};
+  TIMER_DRAFT={date:D.date,part:D.pid,elapsedSec:0,startedAt:null,running:false};TSCREEN=true;return true
+ }};return render()}
+ openTimer(D.date,D.pid)
+},
 deskOpen(){DESK=true;TSCREEN=false;M=null;render();try{const fs=document.documentElement.requestFullscreen?.();if(fs&&typeof fs.then==='function')fs.then(()=>{try{screen.orientation?.lock?.('landscape')?.catch(()=>{})}catch(e){}}).catch(()=>{});else{try{screen.orientation?.lock?.('landscape')?.catch(()=>{})}catch(e){}}}catch(e){}},
 deskExit(){DESK=false;try{screen.orientation?.unlock?.()}catch(e){}render();try{if(document.fullscreenElement)document.exitFullscreen?.().catch(()=>{})}catch(e){}},
 deskNight(){DESKN=deskNight()?2:1;render()},deskRotate(){try{const p=screen.orientation?.lock?.('landscape');if(p&&p.catch)p.catch(()=>toast('چرخش خودکار گوشی را فعال کن و دوباره امتحان کن.'))}catch(e){toast('این مرورگر قفل چرخش را پشتیبانی نمی‌کند؛ چرخش خودکار گوشی را فعال کن.')}},
