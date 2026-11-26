@@ -16,6 +16,27 @@ const appFiles=await Promise.all(['app-core.js','app-views.js','app-actions.js',
 const app=appFiles.join('');
 const pwa=await readFile(new URL('../pwa-update.js',import.meta.url),'utf8');
 const appCss=await readFile(new URL('../app.css',import.meta.url),'utf8');
+const coreContext={
+ document:{documentElement:{lang:'',dir:''},querySelector(){return null},querySelectorAll(){return[]},addEventListener(){}},
+ localStorage:{getItem(){return null},setItem(){},removeItem(){}},
+ window:{addEventListener(){}},
+ StudyAnalytics:context.StudyAnalytics,
+ TextEncoder,
+ setTimeout(){return 0;},
+ clearTimeout(){},
+ console
+};
+vm.runInNewContext(appFiles[0]+String.fromCharCode(10)+'globalThis.__normForTest=norm;',coreContext);
+const imported=JSON.parse('{"__proto__":{"polluted":true},"courses":[{"id":"course-1","name":"Biology"}],"parts":[[],[],[],[],[],[],[]],"blocks":[null,{"day":9,"s":0,"e":60},{"day":1,"s":30,"e":10},{"day":1,"s":60,"e":120,"c":"course-1","tp":"","n":"test"}],"logs":[{"id":"bad-log","date":"2026-11-26","min":-9},{"id":"good-log","date":"2026-11-26","min":15}],"timerBg":"data:text/html,unsafe"}');
+const normalized=coreContext.__normForTest(imported);
+assert.equal(normalized.polluted,undefined,'Imported __proto__ data cannot pollute state');
+assert.equal(Object.getPrototypeOf(normalized).polluted,undefined,'Imported data cannot mutate the state prototype');
+assert.equal(normalized.parts[1].length,1,'Valid legacy blocks still migrate');
+assert.equal(normalized.parts[1][0].s,60,'Legacy block time is preserved');
+assert.equal(normalized.logs.length,1,'Negative study log durations are rejected');
+assert.equal(normalized.logs[0].id,'good-log','Valid study log remains intact');
+assert.equal(normalized.blocks,undefined,'Legacy migration payload is removed after processing');
+assert.equal(normalized.timerBg,'','Non-image timer data URLs are rejected');
 for(const file of ['app-core.js','app-views.js','app-actions.js','app-events.js'])assert.ok(html.includes('src="/'+file+'"'),'Planner layer '+file+' is linked');
 assert.match(html,/src="\/pwa-update\.js"/,'PWA updater is loaded as a separate file');
 assert.match(html,/href="\/app\.css"/,'Main styles are loaded as a separate file');
