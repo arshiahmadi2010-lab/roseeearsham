@@ -18,7 +18,7 @@ assert.doesNotThrow(()=>new Function(inline[1]),'Main app script parses');
 assert.match(html,/src="\/analytics-engine\.js"/,'Engine is loaded before the app');
 assert.match(html,/href="\/analytics\.css"/,'Analytics stylesheet is linked');
 assert.match(html,/StudyAnalytics\.isISODate\(d\)/,'Analytics snapshots survive date validation');
-assert.match(html,/StudyAnalytics\.isISODate\(x\?\.date\)/,'Ordinary stats accept valid stored records');
+assert.match(html,/const totalAll=S\.logs\.reduce/,'Ordinary stats calculate totals from the full saved history');
 assert.match(html,/StudyAnalytics\.isISODate\(from\)/,'Emergency date validation uses the shared validator');
 assert.ok(html.includes('const wasIncluded=priorPart?priorPart.wasIncluded!==false:p.included!==false'),'Emergency exclusions retain the prior inclusion state');
 assert.match(html,/typeof x\.wasIncluded==='boolean'\?x\.wasIncluded/,'Emergency undo restores the prior inclusion state');
