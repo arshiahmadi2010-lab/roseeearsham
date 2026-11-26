@@ -524,7 +524,7 @@ function swapAcross(dA,a,dB,b){const A=asg(dA,findPart(a)),B=asg(dB,findPart(b))
 const sw=o=>{if(o.date==dA&&o.part==a){o.date=dB;o.part=b}else if(o.date==dB&&o.part==b){o.date=dA;o.part=a}};
 S.logs.forEach(sw);S.timeEntries.forEach(sw);
 [[dA,a],[dB,b]].forEach(([d,pid])=>{const p=findPart(pid),n=p&&asg(d,p);S.logs.forEach(l=>{if(l.date==d&&l.part==pid){l.c=n?n.c:'';l.tp=n?n.tp:'';if(l.src=='part'||l.src=='manual-time')l.h=~~(p.s/60)}});syncPartLog(d,pid)})}
-let M=null,D={},V='home',OC=null,CD=today(),STPER='30',STTAB='normal',ST_FROM=addD(today(),-6),ST_TO=today(),AN_DIAG=null,PS='w',PMo=null,PYr=null,SD=null,SPD=wd(today()),PERR='',PVm='l',TSCREEN=false,WL=null,LT='',ANIM=true,FIRST=true,CEL='',DESK=false,DESKN=0,FOCUS_PID=null;
+let M=null,D={},V='home',OC=null,CD=today(),STTAB='normal',ST_FROM=addD(today(),-6),ST_TO=today(),AN_DIAG=null,PS='w',PMo=null,PYr=null,SD=null,SPD=wd(today()),PERR='',PVm='l',TSCREEN=false,WL=null,LT='',ANIM=true,FIRST=true,CEL='',DESK=false,DESKN=0,FOCUS_PID=null;
 const err=m=>{const e=$('#merr');if(e)e.textContent=m;return false};
 async function wake(){try{if(!WL&&(DESK||(TSCREEN&&S.activeTimer&&S.activeTimer.running))&&navigator.wakeLock){WL=await navigator.wakeLock.request('screen');WL.addEventListener('release',()=>{WL=null})}}catch(e){WL=null}}
 function relWake(){try{if(WL){WL.release();WL=null}}catch(e){WL=null}}
@@ -682,25 +682,9 @@ ${partsCard()}
 <div class=card><h2>بکاپ ابری و بازیابی آمار</h2><p class="muted sm">با کد بازیابی، آمار و سوابق مطالعه به‌صورت رمزگذاری‌شده در فضای ابری ذخیره می‌شوند؛ بدون حساب کاربری. کد را در جای امنی نگه دار.</p><div class=row><button class="btn p grow" data-a=createcloudbk>ساخت کد بازیابی و فعال‌سازی بکاپ</button></div><label>کد بازیابی</label><input id=cloudcode autocomplete=off autocapitalize=characters placeholder="کد بازیابی را اینجا وارد کن" value="${esc(localStorage.getItem('planner-backup-code-v1')||'')}"><div class=row style="margin-top:8px"><button class=btn data-a=copycloudcode>کپی کد</button><button class="btn p grow" data-a=restorecloudbk>بازیابی بکاپ ابری</button></div><div class=err id=cloudmsg></div><p class="muted sm">وضعیت: <b id=cloudstatus>بررسی اتصال…</b></p></div><div class=card><h2>پشتیبان‌گیری و بازیابی</h2><p class="muted sm">برای انتقال اطلاعات بین دستگاه‌ها، از اطلاعات پلنر نسخه پشتیبان بگیر.</p><label>متن پشتیبان</label><textarea id=bk rows=4 readonly>${esc(JSON.stringify(S))}</textarea><div class=row><button class="btn p grow" data-a=copybk>کپی پشتیبان</button><button class=btn data-a=downloadbk>دانلود فایل پشتیبان</button></div><label>بازگردانی از پشتیبان</label><textarea id=imp rows=4 placeholder="محتوای فایل پشتیبان را اینجا قرار بده..."></textarea><div class=row><button class=btn data-a=importfile>انتخاب فایل</button><input id=backupFile type=file accept="application/json,.json" hidden><button class="btn p grow" data-a=imp>بازگردانی اطلاعات</button></div><div class=row style="margin-top:8px"><button class=btn data-a=autobk>بارگذاری پشتیبان خودکار (هر ۳ روز)</button></div><div class=err id=imsg></div></div>
 <div class=card><h2>مدیریت اطلاعات</h2><div class=row><div class=grow><b>حجم پس‌زمینه تایمر</b><div class="muted sm">تصویر در فضای جداگانه ذخیره می‌شود و حجم پشتیبان متنی را زیاد نمی‌کند.</div></div><span class=tag>${TIMER_BG_URL?'تصویر فعال':'بدون تصویر'}</span></div><div class=row style="margin-top:12px"><div class=grow><b>پاک‌سازی اطلاعات پلنر</b><div class="muted sm">حذف درس‌ها، پارت‌ها، ثبت‌ها و آمار</div></div><button class="btn d" data-a=wipe>پاک‌سازی</button></div></div>`}
 
-function normalStatsV(){
- const original=S,allLogs=Array.isArray(original.logs)?original.logs:[],allEntries=Array.isArray(original.timeEntries)?original.timeEntries:[];
- const validDate=x=>StudyAnalytics.isISODate(x?.date)&&Number.isFinite(parse(x.date).getTime());
- const safeLogs=allLogs.filter(x=>validDate(x)&&Number.isFinite(+x.min)).map(x=>({...x,min:+x.min}));
- const safeEntries=allEntries.filter(x=>validDate(x)&&Number.isFinite(+(x.seconds??0))).map(x=>({...x,seconds:+x.seconds||0}));
- const days=STPER==='all'?0:+STPER,from=days?addD(today(),1-days):'';
- try{
-  S={...original,logs:days?safeLogs.filter(x=>x.date>=from&&x.date<=today()):safeLogs,timeEntries:days?safeEntries.filter(x=>x.date>=from&&x.date<=today()):safeEntries};
-  let body=statsVBase();
-  if(STPER!=='30')body=body.replaceAll('۳۰ روز اخیر','بازهٔ انتخابی').replaceAll('شش ماه اخیر','ماه‌های اخیر');
-  const opts=[['7','۷ روز'],['30','۳۰ روز'],['90','۹۰ روز'],['365','یک سال'],['all','همهٔ سوابق']];
-  const bar='<div class="card"><div class="row"><b class=grow>بازهٔ آمار معمولی</b><span class=tag>'+(STPER==='all'?'تمام سوابق':'از '+fj(from,1)+' تا امروز')+'</span></div><div class=stats-period>'+opts.map(([k,n])=>'<button class="chip '+(STPER===k?'on':'')+'" data-a=statsPeriod data-k='+k+'>'+n+'</button>').join('')+'</div></div>';
-  return bar+body;
- }catch(err){console.error('Ordinary stats render failed:',err);return '<div class=card><h2>آمار معمولی</h2><p>نمایش آمار با خطا روبه‌رو شد؛ داده‌های ثبت‌شده دست‌نخورده باقی مانده‌اند.</p></div>'}
- finally{S=original}
-}
 function statsV(){
  const tabs='<div class="stats-period" style="margin:12px 0 16px"><button class="chip '+(STTAB==='normal'?'on':'')+'" data-a=statsTab data-k=normal>آمار معمولی</button><button class="chip '+(STTAB==='index'?'on':'')+'" data-a=statsTab data-k=index>شاخص بازدهی</button></div>';
- return tabs+(STTAB==='index'?analyticsV():normalStatsV());
+ return tabs+(STTAB==='index'?analyticsV():statsVBase());
 }
 
 function optV(){
@@ -943,7 +927,7 @@ timerBgClear(){removeTimerBg().then(()=>{S.timerBg='';save();render()})},
 downloadbk(){const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'}),u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='study-planner-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)},
 importfile(){const f=$('#backupFile');if(f)f.click()},
 mvgo(){const d2=$('#mvd').value,q=$('#mvp').value;if(!q)return err('پارت مقصد را انتخاب کن.');swapAcross(D.date,D.pid,d2,q);M=null;save();render()},
-statsTab(){STTAB=D.k==='index'?'index':'normal';render()},statsPeriod(){STPER=D.k;render()},analyticsPreset(){const k=D.k;ST_TO=today();if(k==='all'){const dates=Object.keys(S.analytics?.plans||{}).sort();ST_FROM=dates[0]||today()}else if(k==='week'){ST_FROM=addD(ST_TO,-wd(ST_TO))}else if(k==='month'){const [y,m]=J(ST_TO);ST_FROM=isoJ(y,m,1)}else if(k==='year'){const [y]=J(ST_TO);ST_FROM=isoJ(y,1,1)}else ST_FROM=addD(ST_TO,-Math.max(0,(+k||7)-1));render()},analyticsTest(){AN_DIAG=StudyAnalytics.diagnostics();render();if(AN_DIAG.failed.length)toast('تست موتور بازدهی خطا دارد.');else toast('تمام تست‌های موتور بازدهی موفق بودند.')},pv(){PS=D.k;render()},mnav(){let[y,m]=PMo;m+=+D.k;if(m>12){m=1;y++}if(m<1){m=12;y--}PMo=[y,m];SD=null;render()},ynav(){PYr+=+D.k;render()},sday(){SD=D.d;render()},
+statsTab(){STTAB=D.k==='index'?'index':'normal';render()},analyticsPreset(){const k=D.k;ST_TO=today();if(k==='all'){const dates=Object.keys(S.analytics?.plans||{}).sort();ST_FROM=dates[0]||today()}else if(k==='week'){ST_FROM=addD(ST_TO,-wd(ST_TO))}else if(k==='month'){const [y,m]=J(ST_TO);ST_FROM=isoJ(y,m,1)}else if(k==='year'){const [y]=J(ST_TO);ST_FROM=isoJ(y,1,1)}else ST_FROM=addD(ST_TO,-Math.max(0,(+k||7)-1));render()},analyticsTest(){AN_DIAG=StudyAnalytics.diagnostics();render();if(AN_DIAG.failed.length)toast('تست موتور بازدهی خطا دارد.');else toast('تمام تست‌های موتور بازدهی موفق بودند.')},pv(){PS=D.k;render()},mnav(){let[y,m]=PMo;m+=+D.k;if(m>12){m=1;y++}if(m<1){m=12;y--}PMo=[y,m];SD=null;render()},ynav(){PYr+=+D.k;render()},sday(){SD=D.d;render()},
 mlog(){const m=+nd($('#lm').value),c=$('#lc').value,e=$('#lerr');if(D.d>today()){if(e)e.textContent='برای روزهای آینده نمی‌شود ثبت کرد.';return}if(!c){if(e)e.textContent='اول در بخش «درس‌ها» یک درس اضافه کن.';return}if(!(m>0)){if(e)e.textContent='مدت را به دقیقه وارد کن.';return}S.logs.push({id:uid(),date:D.d,c,tp:'',min:m,src:'manual'});save();render()},dlg(){S.logs=S.logs.filter(l=>l.id!=D.id);save();render()},
 opc(){OC=D.id;render();scrollTo(0,0)},bc(){OC=null;render()},newc(){courseForm()},editc(){courseForm(C(D.id))},
 ts(){const p=T_(D.c,D.p);p.st=(p.st+1)%3;save();render()},tw(){const p=T_(D.c,D.p);p.w=p.w%3+1;save();render()},
