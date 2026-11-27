@@ -2,7 +2,9 @@ export async function onRequest({ request, env }) {
   const headers = { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" };
   const reply = (body, status = 200) => new Response(JSON.stringify(body), { status, headers });
   if (!env.BACKUPS) return reply({ error: "Backup storage is not configured" }, 503);
-  if (env.PREVIEW_MODE === "true") return reply({ error: "Cloud backup is disabled in preview deployments" }, 503);
+  const hostname = new URL(request.url).hostname.toLowerCase();
+  const previewPagesHost = hostname.endsWith(".planner-arshia-test.pages.dev") && hostname !== "planner-arshia-test.pages.dev";
+  if (env.PREVIEW_MODE === "true" || previewPagesHost) return reply({ error: "Cloud backup is disabled in preview deployments" }, 503);
   const url = new URL(request.url);
   if (request.method === "GET") {
     const id = url.searchParams.get("id") || "";
