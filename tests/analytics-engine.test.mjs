@@ -52,7 +52,9 @@ assert.match(app,/const totalAll=S\.logs\.reduce/,'Ordinary stats calculate tota
 assert.match(app,/function analyticsEnsureActivityDays\(\)/,'Past activity dates are checked without inventing plan snapshots');
 assert.match(app,/historical-snapshot-unavailable/,'Missing historical plan snapshots are audited without fabrication');
 assert.match(app,/reconstructed:!!p\.reconstructed/,'Previously reconstructed snapshots retain their provenance');
-assert.match(app,/plans\.some\(p=>p\.reconstructed\)/,'Unverifiable reconstructed days are excluded from scoring');\nassert.match(app,/id:'__active_timer__',partId:live.part,seconds/,'The live timer contributes to the current daily productivity score before it is saved');\nassert.match(source,/actual>0\|\|status==='completed'\|\|status==='partial'/,'Punctuality alone cannot create a positive score without study activity');
+assert.match(app,/plans\.some\(p=>p\.reconstructed\)/,'Unverifiable reconstructed days are excluded from scoring');
+assert.match(app,/id:'__active_timer__',partId:live.part,seconds/,'The live timer contributes to the current daily productivity score before it is saved');
+assert.match(source,/actual>0\|\|status==='completed'\|\|status==='partial'/,'Punctuality alone cannot create a positive score without study activity');
 assert.ok(app.includes('StudyAnalytics.isISODate(x)'),'Imported dates use strict calendar validation');
 assert.match(views,/const notice=.*unverified/s,'Analytics explains missing and unverifiable historical scores');
 assert.match(views,/async function makeMonth\(y,m\).*?gm=Math\.max\(1,\.\.\.days\)/s,'Monthly poster defines its activity scale before rendering');
