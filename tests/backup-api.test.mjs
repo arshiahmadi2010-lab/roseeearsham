@@ -44,8 +44,14 @@ assert.equal(response.status, 405, 'Unsupported methods are rejected');
 
 response = await onRequest({ request: request('GET', 'https://planner.test/api/backup?id=' + id), env: {} });
 assert.equal(response.status, 503, 'Missing KV binding returns service unavailable');
+const previewEnv = { ...env, PREVIEW_MODE: 'true' };
+response = await onRequest({ request: request('GET', 'https://planner.test/api/backup?id=' + id), env: previewEnv });
+assert.equal(response.status, 503, 'Preview cannot read the production backup namespace');
+response = await onRequest({ request: request('POST', 'https://planner.test/api/backup', payload), env: previewEnv });
+assert.equal(response.status, 503, 'Preview cannot write to the production backup namespace');
+assert.equal(rows.size, 1, 'Preview requests do not modify stored backups');
 
 response = await onRequest({ request: request('POST', 'https://planner.test/api/backup', { ...payload, data: 'A'.repeat(1800004) }), env });
 assert.equal(response.status, 413, 'Oversized ciphertext is rejected');
 
-console.log('Cloud backup API tests: 10 passed');
+console.log('Cloud backup API tests: 12 route checks passed');
