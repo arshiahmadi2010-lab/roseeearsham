@@ -16,6 +16,7 @@ const appFiles=await Promise.all(['app-core.js','app-views.js','app-actions.js',
 const app=appFiles.join('');
 const pwa=await readFile(new URL('../pwa-update.js',import.meta.url),'utf8');
 const appCss=await readFile(new URL('../app.css',import.meta.url),'utf8');
+const views=await readFile(new URL('../app-views.js',import.meta.url),'utf8');
 const coreContext={
  document:{documentElement:{lang:'',dir:''},querySelector(){return null},querySelectorAll(){return[]},addEventListener(){}},
  localStorage:{getItem(){return null},setItem(){},removeItem(){}},
