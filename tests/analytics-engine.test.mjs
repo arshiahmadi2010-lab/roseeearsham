@@ -56,7 +56,7 @@ assert.match(app,/plans\.some\(p=>p\.reconstructed\)/,'Unverifiable reconstructe
 assert.ok(app.includes('StudyAnalytics.isISODate(x)'),'Imported dates use strict calendar validation');
 assert.match(views,/const notice=.*unverified/s,'Analytics explains missing and unverifiable historical scores');
 assert.match(views,/async function makeMonth\(y,m\).*?gm=Math\.max\(1,\.\.\.days\)/s,'Monthly poster defines its activity scale before rendering');
-assert.match(views,/const bucketSize=Math\.max\(1,Math\.ceil\(days\.length\/42\))/,'Analytics charts aggregate the selected range instead of silently truncating it');
+assert.ok(views.includes('const bucketSize=Math.max(1,Math.ceil(days.length/42))'),'Analytics charts aggregate the selected range instead of silently truncating it');
 assert.match(views,/data-analytics-date=start/,'Analytics date range controls are present');
 assert.match(views,/زمان مطالعه و زمان برنامه‌ریزی‌شده/,'Analytics includes a selected-range study versus plan chart');
 
