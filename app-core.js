@@ -135,6 +135,11 @@ function analyticsDay(date){
  if(!plans)return {status:'no-data',score:null,components:{time:null,adherence:null,discipline:null},formulaVersion:1};
  if(plans.some(p=>p.reconstructed))return {status:'unverified',score:null,components:{time:null,adherence:null,discipline:null},formulaVersion:1};
  const sessions=S.timeEntries.filter(x=>x.date===date).map(x=>({id:x.id,partId:x.part,seconds:x.seconds}));
+ const live=S.activeTimer;
+ if(live&&live.date===date){
+  const seconds=Math.max(0,Math.floor((+live.elapsedSec||0)+(live.running&&live.startedAt?(Date.now()-live.startedAt)/1000:0)));
+  if(seconds>0)sessions.push({id:'__active_timer__',partId:live.part,seconds});
+ }
  const completions={};plans.forEach(p=>{if(p.status)completions[p.id]=p.status});
  return StudyAnalytics.calculateDay({plans,sessions,completions});
 }
