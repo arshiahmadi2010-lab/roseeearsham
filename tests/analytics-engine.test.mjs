@@ -27,7 +27,7 @@ const coreContext={
  console
 };
 vm.runInNewContext(appFiles[0]+String.fromCharCode(10)+'globalThis.__normForTest=norm;',coreContext);
-const imported=JSON.parse('{"__proto__":{"polluted":true},"courses":[{"id":"course-1","name":"Biology"}],"parts":[[],[],[],[],[],[],[]],"blocks":[null,{"day":9,"s":0,"e":60},{"day":1,"s":30,"e":10},{"day":1,"s":60,"e":120,"c":"course-1","tp":"","n":"test"}],"logs":[{"id":"bad-log","date":"2026-11-26","min":-9},{"id":"good-log","date":"2026-11-26","min":15}],"timerBg":"data:text/html,unsafe"}');
+const imported=JSON.parse('{"__proto__":{"polluted":true},"courses":[{"id":"course-1","name":"Biology"}],"parts":[[],[null,{}],[],[],[],[],[]],"blocks":[null,{"day":9,"s":0,"e":60},{"day":1,"s":30,"e":10},{"day":1,"s":60,"e":120,"c":"course-1","tp":"","n":"test"}],"logs":[{"id":"bad-log","date":"2026-11-26","min":-9},{"id":"good-log","date":"2026-11-26","min":15}],"timerBg":"data:text/html,unsafe"}');
 const normalized=coreContext.__normForTest(imported);
 assert.equal(normalized.polluted,undefined,'Imported __proto__ data cannot pollute state');
 assert.equal(Object.getPrototypeOf(normalized).polluted,undefined,'Imported data cannot mutate the state prototype');
