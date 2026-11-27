@@ -10,7 +10,7 @@ assert.equal(context.StudyAnalytics.isISODate('2026-02-29'),false,'Impossible da
 assert.equal(context.StudyAnalytics.isISODate('2026-13-01'),false,'Invalid months are rejected');
 assert.equal(context.StudyAnalytics.isISODate('not-a-date'),false,'Malformed dates are rejected');
 assert.equal(result.failed.length,0,JSON.stringify(result.failed));
-assert.ok(result.total>=14,'Expected at least 14 regression scenarios');
+assert.ok(result.total>=15,'Expected at least 15 regression scenarios');
 const html=await readFile(new URL('../index.html',import.meta.url),'utf8');
 const appFiles=await Promise.all(['app-core.js','app-views.js','app-actions.js','app-events.js'].map(file=>readFile(new URL('../'+file,import.meta.url),'utf8')));
 const app=appFiles.join('');
@@ -52,7 +52,7 @@ assert.match(app,/const totalAll=S\.logs\.reduce/,'Ordinary stats calculate tota
 assert.match(app,/function analyticsEnsureActivityDays\(\)/,'Past activity dates are checked without inventing plan snapshots');
 assert.match(app,/historical-snapshot-unavailable/,'Missing historical plan snapshots are audited without fabrication');
 assert.match(app,/reconstructed:!!p\.reconstructed/,'Previously reconstructed snapshots retain their provenance');
-assert.match(app,/plans\.some\(p=>p\.reconstructed\)/,'Unverifiable reconstructed days are excluded from scoring');
+assert.match(app,/plans\.some\(p=>p\.reconstructed\)/,'Unverifiable reconstructed days are excluded from scoring');\nassert.match(app,/id:'__active_timer__',partId:live.part,seconds/,'The live timer contributes to the current daily productivity score before it is saved');\nassert.match(source,/actual>0\|\|status==='completed'\|\|status==='partial'/,'Punctuality alone cannot create a positive score without study activity');
 assert.ok(app.includes('StudyAnalytics.isISODate(x)'),'Imported dates use strict calendar validation');
 assert.match(views,/const notice=.*unverified/s,'Analytics explains missing and unverifiable historical scores');
 assert.match(views,/async function makeMonth\(y,m\).*?gm=Math\.max\(1,\.\.\.days\)/s,'Monthly poster defines its activity scale before rendering');
@@ -83,7 +83,7 @@ assert.match(app,/S\.activeTimer\.elapsedSec=timerSeconds\(\);S\.activeTimer\.ru
 const css=await readFile(new URL('../analytics.css',import.meta.url),'utf8');
 assert.match(css,/\.an-wrap/,'Glass dashboard styles exist');
 const sw=await readFile(new URL('../sw.js',import.meta.url),'utf8');
-assert.match(sw,/const CACHE='planner-pwa-v[0-9]+'/,'Service worker has a versioned cache');
+assert.match(sw,/const CACHE='planner-pwa-v40'/,'Service worker cache is bumped for the current UI and scoring fixes');
 assert.match(sw,/status:503/,'Missing offline static assets return an error instead of the app shell');
 assert.match(sw,/analytics-engine\.js/,'Service worker caches the engine');
 assert.match(sw,/app-core\.js/,'Service worker caches the app core');
