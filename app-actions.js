@@ -22,7 +22,7 @@ deskNight(){DESKN=deskNight()?2:1;render()},deskRotate(){try{const p=screen.orie
 deskFace(){S.deskFace=+D.i;save();render()},
 deskToggle(){const t=S.activeTimer;if(!t){const p=deskPart().p;if(!p)return toast('پارتی با درس چیده‌شده برای امروز نیست.');S.activeTimer={date:today(),part:p.id,elapsedSec:0,startedAt:Date.now(),running:true,h:new Date().getHours()}}else if(t.running){t.elapsedSec=timerSeconds();t.running=false;t.startedAt=null}else{t.running=true;t.startedAt=Date.now()}save();render()},
 deskFinish(){A.timerFinish();toast('زمان ثبت شد ✓')},
-imgToday(){pTry(makeTodayPlan)},imgWeek(){pTry(makeWeekPlan)},imgMonth(){const j=J(today());pTry(()=>makeMonth(+D.y||j[0],+D.m||j[1]))},imgYear(){const j=J(today());pTry(()=>makeYear(+D.y||PYr||j[0]))},
+imgToday(){pTry(makeToday)},imgWeek(){pTry(makeWeek)},planImgToday(){pTry(makeTodayPlan)},planImgWeek(){pTry(makeWeekPlan)},imgMonth(){const j=J(today());pTry(()=>makeMonth(+D.y||j[0],+D.m||j[1]))},imgYear(){const j=J(today());pTry(()=>makeYear(+D.y||PYr||j[0]))},
 imgdl(){if(!IMG)return;const a=document.createElement('a');a.href=IMG.url;a.download=IMG.name;document.body.appendChild(a);a.click();a.remove()},
 imgshare(){if(!IMG)return;const f=new File([IMG.blob],IMG.name,{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f],title:'پلنر مطالعه'}).catch(()=>{});else A.imgdl()},
 cpLink(){const l=location.href.split('#')[0]+'#'+D.k;try{navigator.clipboard.writeText(l).then(()=>toast('لینک کپی شد ✓')).catch(()=>toast('کپی نشد؛ لینک: '+l))}catch(e){toast('کپی نشد')}},
