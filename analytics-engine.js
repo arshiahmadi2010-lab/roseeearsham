@@ -33,7 +33,7 @@ function calculateDay(input){
   const completion=status==='completed'?100:clamp(actual/target*100,0,100);
   adherence+=completion;
   let late=null;
-  if(finite(p.plannedStart)&&finite(p.actualStart)){
+  if((actual>0||status==='completed'||status==='partial')&&finite(p.plannedStart)&&finite(p.actualStart)){
    const delta=Math.max(0,Number(p.actualStart)-Number(p.plannedStart));
    late=delta<=15?100:delta>=60?0:(60-delta)/45*100;
    discipline+=late;disciplineCount++;
@@ -58,7 +58,7 @@ function diagnostics(){
  check('پایبندی پارت ناقص متناسب است',()=>calc([{id:'x',subjectId:'bio',plannedMinutes:120}],[{id:'s',partId:'x',seconds:3600}]).components.adherence===50);
  check('تکمیل زودتر پایبندی کامل دارد',()=>calc([{id:'x',subjectId:'bio',plannedMinutes:120}],[{id:'s',partId:'x',seconds:3600}],{x:'completed'}).components.adherence===100);
  check('پارت بدون مطالعه پایبندی صفر دارد',()=>calc([{id:'x',subjectId:'bio',plannedMinutes:60}]).components.adherence===0);
- check('تأخیر تا ۱۵ دقیقه جریمه ندارد',()=>calc([{id:'x',subjectId:'bio',plannedMinutes:60,plannedStart:480,actualStart:495}]).components.discipline===100);
+ check('شروع به‌موقع بدون مطالعه امتیاز مثبت نمی‌سازد',()=>calc([{id:'x',subjectId:'bio',plannedMinutes:60,plannedStart:480,actualStart:480}]).score===0);\n check('تأخیر تا ۱۵ دقیقه جریمه ندارد',()=>calc([{id:'x',subjectId:'bio',plannedMinutes:60,plannedStart:480,actualStart:495}]).components.discipline===100);
  check('تأخیر ۶۰ دقیقه امتیاز نظم صفر دارد',()=>calc([{id:'x',subjectId:'bio',plannedMinutes:60,plannedStart:480,actualStart:540}]).components.discipline===0);
  check('شروع ثبت‌نشده وزن را بازتوزیع می‌کند',()=>{const x=calc([{id:'x',subjectId:'bio',plannedMinutes:60,plannedStart:480,actualStart:null}],[{id:'s',partId:'x',seconds:1800}]);return x.components.discipline===null&&Math.abs(x.score-50)<1e-9});
  check('جلسه تکراری دوباره شمرده نمی‌شود',()=>calc([{id:'x',subjectId:'bio',plannedMinutes:60}],[{id:'s',partId:'x',seconds:1800},{id:'s',partId:'x',seconds:1800}]).actualMinutes===30);
