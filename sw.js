@@ -1,5 +1,5 @@
-// Update release: 2026-11-26-data-safety-modular-runtime
-const CACHE='planner-pwa-v37';
+// Update release: 2026-11-27-final-audit-core-migration-fix
+const CACHE='planner-pwa-v38';
 const CORE=['/','/index.html','/manifest.webmanifest','/icon.svg','/analytics-engine.js','/analytics.css','/app.css','/app-core.js','/app-views.js','/app-actions.js','/app-events.js','/pwa-update.js'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE))));
 self.addEventListener('message',e=>{if(e.data&&e.data.type==='SKIP_WAITING')self.skipWaiting();});
