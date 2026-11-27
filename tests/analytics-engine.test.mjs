@@ -54,7 +54,7 @@ assert.match(app,/historical-snapshot-unavailable/,'Missing historical plan snap
 assert.match(app,/reconstructed:!!p\.reconstructed/,'Previously reconstructed snapshots retain their provenance');
 assert.match(app,/plans\.some\(p=>p\.reconstructed\)/,'Unverifiable reconstructed days are excluded from scoring');
 assert.ok(app.includes('StudyAnalytics.isISODate(x)'),'Imported dates use strict calendar validation');
-assert.match(views,/reconstructedSnapshotNotice/,'Analytics explains excluded reconstructed historical scores');
+assert.match(views,/const notice=.*unverified/s,'Analytics explains missing and unverifiable historical scores');
 assert.match(views,/async function makeMonth\(y,m\).*?gm=Math\.max\(1,\.\.\.days\)/s,'Monthly poster defines its activity scale before rendering');
 assert.match(views,/const bucketSize=Math\.max\(1,Math\.ceil\(days\.length\/42\))/,'Analytics charts aggregate the selected range instead of silently truncating it');
 assert.match(views,/data-analytics-date=start/,'Analytics date range controls are present');
