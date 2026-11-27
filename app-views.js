@@ -8,7 +8,7 @@ if(ovr.length&&fr)h+=`<div class="card row"><div class=grow><b>${fa(ovr.length)}
 h+=startCard();h+=dayRing(t);h+='<div class="home-actions"><button class="btn p" data-a=quickStart>▶ شروع مطالعه</button><button class=btn data-a=emergencyOpen>شرایط اضطراری</button><button class=btn data-a=freeStudyOpen>مطالعهٔ آزاد</button><button class=btn data-a=go data-v=plan>برنامه‌ریزی</button><button class=btn data-a=deskOpen>حالت رومیزی</button></div>';
 if(!S.courses.length)h+=`<div class=card><h2>درس‌هایت را اضافه کن</h2><p class=muted>در بخش «درس‌ها» درس و مبحث‌هایت را بساز، بعد در «برنامه» داخل پارت‌ها بچین.</p><div class=row><button class="btn p" data-a=preset data-k="پایه یازدهم تجربی">افزودن درس‌های یازدهم تجربی</button><button class=btn data-a=go data-v=courses>افزودن دستی</button><button class=btn data-a=demo>بارگذاری داده‌ی نمونه</button></div></div>`;
 h+=`<div class=card><div class=row><h2 class=grow>برنامه‌ی امروز</h2><button class=btn data-a=go data-v=plan>برنامه‌ی هفته</button></div><div style="margin-top:14px">${dayList(t)}</div></div>`;
-h+=`<div class="card row"><button class="btn grow" data-a=deskOpen>🖥️ حالت میز</button><button class="btn grow" data-a=imgToday>🖼️ کارت امروز</button></div>`;
+h+=`<div class="card row"><button class="btn grow" data-a=deskOpen>🖥️ حالت میز</button></div>`;
 h+=`<div class=grid2><div class=card><div class="muted sm">روزهای پیاپی</div><div class=big>${fa(streak())}</div></div><div class=card><div class="muted sm">بازدهی امروز</div><div class=big>${sp==null?'—':fa(Math.round(sp))+'٪'}</div></div></div>`;
 if(w)h+=`<div class=card><div class="muted sm">پیشنهاد امروز</div><p>در ۷ روز اخیر کمتر از همه به <b>${esc(w.c.name)}</b> رسیده‌ای (${fmin(w.m)}). امروز برایش وقت بگذار.</p></div>`;
 return h}
@@ -39,7 +39,6 @@ const recent14=Array.from({length:14},(_,i)=>{const d=addD(t,-13+i);return{d,v:m
 const wkPlan=ds.reduce((a,x)=>a+x.p,0),wkDone=ds.reduce((a,x)=>a+x.a,0),ad=wkPlan?Math.round(wkDone/wkPlan*100):null;
 const bh=Object.keys(hours).sort((a,b)=>hours[b]-hours[a])[0];
 return`<h1>آمار و تحلیل عملکرد</h1>
-<div class=card><h2>پوسترهای اشتراک‌گذاری</h2><p class="muted sm">گزارش‌های تصویری روزانه تا سالانه با طراحی یکپارچه و آماده‌ی ذخیره یا اشتراک‌گذاری.</p><div class=row style="flex-wrap:wrap"><button class="btn grow" data-a=imgToday>روزانه</button><button class="btn grow" data-a=imgWeek>هفتگی</button><button class="btn grow" data-a=imgMonth data-y=${jy} data-m=${jm}>ماهانه</button><button class="btn grow" data-a=imgYear data-y=${jy}>سالانه</button></div></div>
 <div class="stats-hero"><div class="muted sm">مجموع کل زمان ثبت‌شده</div><div class="stats-total">${fmin(totalAll)}</div><div class="stats-hero-foot"><span>میانگین روزهای مطالعه: <b>${fh(avgDay)} ساعت</b></span><span>روزهای فعال: <b>${fa(activeDays)}</b></span></div></div>
 <div class=grid2><div class="card stat-tile"><div class="muted sm">امروز</div><b>${fmin(sum(1))}</b><small>مطالعهٔ امروز</small></div><div class="card stat-tile"><div class="muted sm">۷ روز اخیر</div><b>${fmin(sum(7))}</b><small>میانگین ${fh(sum(7)/7)} ساعت در روز</small></div><div class="card stat-tile"><div class="muted sm">۳۰ روز اخیر</div><b>${fmin(sum(30))}</b><small>${fa(sessions)} جلسه ثبت زمان</small></div><div class="card stat-tile"><div class="muted sm">تداوم مطالعه</div><b>${fa(streak())} روز</b><small>بیشترین رکورد: ${fa(lstreak())} روز</small></div></div>
 <div class=card><h2>روند ۷ روز اخیر</h2>${barChart(ds)}<div class=legend><span><i class=leg-plan></i> برنامه</span><span><i class=leg-done></i> مطالعه ثبت‌شده</span></div>${ad==null?'<p class="muted sm">برای محاسبه پایبندی، ابتدا پارت‌ها را برنامه‌ریزی کن.</p>':`<div class=row style="margin-top:10px"><b class=big>${fa(ad)}٪</b><span class="muted sm">پایبندی به برنامه · ${fmin(wkDone)} از ${fmin(wkPlan)}</span></div>`}</div>
@@ -223,7 +222,47 @@ function showImage(c,name){try{c.toBlob(b=>{if(!b){toast('ساخت فایل تص
 function posterRow(x,y,left,right,W,T,sub){pCard(x,72,y,W-144,76,T,.05);tx(x,left,W-105,y+32,{s:26,w:700,c:T.fg,m:W-330});tx(x,right,105,y+32,{s:24,w:600,c:T.mu,a:'left',m:210});if(sub)tx(x,sub,W-105,y+61,{s:18,w:400,c:T.mu,m:W-190})}
 function posterEmpty(x,y,W,T,msg){tx(x,msg,W/2,y+34,{s:25,w:500,c:T.mu,a:'center',m:W-160});return y+70}
 async function makeTodayPlan(){await fontsReady();const W=1080,d=today(),ps=dayParts(d).slice().sort((a,b)=>a.s-b.s).map((p,i)=>({p,q:asg(d,p),i:i+1})).filter(z=>z.q),H=Math.max(1120,470+ps.length*158),[c,x]=cvs(W,H),T=THC();paintBg(x,W,H,T);pHeader(x,'برنامهٔ امروز',DAYS[wd(d)]+' · '+fj(d,1),W,T);let y=340;if(!ps.length){posterEmpty(x,y,W,T,'برای امروز برنامه‌ای ثبت نشده است.')}else{ps.forEach(z=>{const tp=T_(z.q.c,z.q.tp),lesson=tp&&tp.name?tp.name:'';pCard(x,64,y,W-128,132,T,.085);pCard(x,W-190,y+22,86,86,T,.16);tx(x,fa(z.i),W-147,y+79,{s:43,w:800,c:T.ac,a:'center'});tx(x,cname(z.q.c),W-225,y+54,{s:37,w:800,c:T.fg,m:W-350});if(lesson)tx(x,lesson,W-225,y+101,{s:25,w:600,c:T.mu,m:W-360});tx(x,ftime(z.p.s)+' تا '+ftime(z.p.e),120,y+79,{s:31,w:700,c:T.ac,a:'left',m:220});y+=158})}pFooter(x,W,H,T);showImage(c,'today-plan-'+d+'.png')}
-async function makeWeekPlan(){await fontsReady();const W=1080,ws=addD(CD,-wd(CD)),we=addD(ws,6),days=Array.from({length:7},(_,i)=>{const d=addD(ws,i);return{d,parts:dayParts(d).slice().sort((a,b)=>a.s-b.s).map((p,j)=>({p,q:asg(d,p),i:j+1})).filter(z=>z.q)}}),left=days.slice(0,4),right=days.slice(4),cardH=day=>58+Math.max(1,day.parts.length)*43+14,colH=arr=>arr.reduce((n,d)=>n+cardH(d)+12,0),H=Math.max(1080,360+Math.max(colH(left),colH(right))+130),[c,x]=cvs(W,H),T=THC();paintBg(x,W,H,T);pHeader(x,'برنامهٔ هفتگی',fj(ws,1)+' تا '+fj(we,1),W,T);const drawCol=(arr,x0)=>{let y=320;arr.forEach(day=>{const h=cardH(day);pCard(x,x0,y,470,h,T,.085);tx(x,DAYS[wd(day.d)],x0+438,y+38,{s:29,w:800,c:T.fg});tx(x,fj(day.d,1),x0+28,y+36,{s:21,w:600,c:T.mu});if(!day.parts.length){tx(x,'—',x0+235,y+79,{s:25,c:T.mu,a:'center'})}else day.parts.forEach((z,j)=>{const yy=y+58+j*43,tp=T_(z.q.c,z.q.tp),lesson=tp&&tp.name?tp.name:'';rr(x,x0+14,yy-27,442,37,11);x.fillStyle=hexA(T.fg,.055);x.fill();tx(x,fa(z.i),x0+424,yy,{s:22,w:800,c:T.ac});tx(x,cname(z.q.c)+(lesson?' · '+lesson:''),x0+390,yy,{s:20,w:650,c:T.fg,m:270});tx(x,ftime(z.p.s)+'-'+ftime(z.p.e),x0+30,yy,{s:18,w:700,c:T.mu,a:'left',m:115})});y+=h+12})};drawCol(left,72);drawCol(right,538);pFooter(x,W,H,T);showImage(c,'week-plan-'+ws+'.png')}
+async function makeWeekPlan(){
+ await fontsReady();
+ const W=1080,ws=addD(CD,-wd(CD)),we=addD(ws,6);
+ const days=Array.from({length:7},(_,i)=>{
+  const d=addD(ws,i);
+  return {d,parts:dayParts(d).slice().sort((a,b)=>a.s-b.s).map((p,j)=>({p,q:asg(d,p),i:j+1})).filter(z=>z.q)};
+ });
+ const right=days.slice(0,4),left=days.slice(4);
+ const cardH=day=>70+Math.max(1,day.parts.length)*43;
+ const colH=arr=>arr.reduce((n,d)=>n+cardH(d)+14,0);
+ const H=Math.max(1080,340+Math.max(colH(left),colH(right))+120);
+ const [c,x]=cvs(W,H),T=THC();
+ paintBg(x,W,H,T);
+ pHeader(x,'برنامهٔ هفتگی',fj(ws,1)+' تا '+fj(we,1),W,T);
+ const drawCol=(arr,x0)=>{
+  let y=320;
+  arr.forEach(day=>{
+   const h=cardH(day);
+   pCard(x,x0,y,458,h,T,.085);
+   tx(x,DAYS[wd(day.d)],x0+434,y+34,{s:28,w:800,c:T.fg});
+   tx(x,fj(day.d,1),x0+24,y+34,{s:20,w:600,c:T.mu,a:'left',m:150});
+   if(!day.parts.length){
+    tx(x,'بدون پارت برنامه‌ریزی‌شده',x0+229,y+83,{s:22,c:T.mu,a:'center',m:390});
+   }else{
+    day.parts.forEach((z,j)=>{
+     const yy=y+69+j*43,tp=T_(z.q.c,z.q.tp),lesson=tp&&tp.name?tp.name:'';
+     rr(x,x0+14,yy-28,430,36,10);
+     x.fillStyle=hexA(T.fg,.055);x.fill();
+     tx(x,fa(z.i),x0+424,yy-3,{s:21,w:800,c:T.ac});
+     tx(x,cname(z.q.c)+(lesson?' · '+lesson:''),x0+388,yy-3,{s:19,w:650,c:T.fg,m:245});
+     tx(x,ftime(z.p.s)+' تا '+ftime(z.p.e),x0+28,yy-3,{s:17,w:700,c:T.mu,a:'left',m:112});
+    });
+   }
+   y+=h+14;
+  });
+ };
+ drawCol(right,550);
+ drawCol(left,72);
+ pFooter(x,W,H,T);
+ showImage(c,'week-plan-'+ws+'.png');
+}
 async function makeToday(){await fontsReady();const W=1080,d=today(),m=minOn(d),ar=analyticsDay(d),pr=ar.status==='scored'?ar.score/100:0,ps=dayParts(d).slice().sort((a,b)=>a.s-b.s),courses=pCourses(d,d),H=Math.max(1720,1450+ps.length*100+courses.length*112),[c,x]=cvs(W,H),T=THC();paintBg(x,W,H,T);pHeader(x,'گزارش امروز',DAYS[wd(d)]+' · '+fj(d,1),W,T);pCard(x,72,330,W-144,270,T,.09);tx(x,fh(m),W-112,450,{s:104,w:800,c:T.fg});tx(x,'زمان مطالعه',W-112,510,{s:28,c:T.mu});tx(x,'بازدهی روزانه',W-112,558,{s:24,c:T.mu});pBar(x,112,570,W-224,13,pr,T.ac,T);pMetric(x,72,650,292,ar.status==='scored'?fa(Math.round(ar.score))+'٪':'—','بازدهی روزانه',T);pMetric(x,394,650,292,fa(courses.length),'درس مطالعه‌شده',T);pMetric(x,716,650,292,fa(streak())+' روز','تداوم مطالعه',T);let y=850;tx(x,'سهم درس‌های امروز',W-72,y,{s:38,w:800,c:T.fg});y=pCourseRows(x,courses,y+35,W,T,Math.max(1,courses.length))+20;tx(x,'برنامه‌ی کامل امروز',W-72,y,{s:38,w:800,c:T.fg});y+=55;if(!ps.length)y=posterEmpty(x,y,W,T,'برای امروز پارت برنامه‌ریزی نشده است.');ps.forEach((p,i)=>{const q=asg(d,p),dn=doneLog(d,p.id),tp=q?T_(q.c,q.tp):null;posterRow(x,y,fa(i+1)+'. '+p.name,ftime(p.s)+' تا '+ftime(p.e),W,T,(q?cname(q.c)+(tp?' · '+tp.name:''):'پارت خالی')+(dn?' · تکمیل‌شده':''));y+=88});pFooter(x,W,H,T);showImage(c,'study-daily-'+d+'.png')}
 async function makeWeek(){await fontsReady();const W=1080,ws=addD(CD,-wd(CD)),we=addD(ws,6),tot=rangeMin(ws,we),days=Array.from({length:7},(_,i)=>{const d=addD(ws,i);return{d,v:minOn(d),parts:dayParts(d).slice().sort((a,b)=>a.s-b.s)}}),rows=days.reduce((n,q)=>n+Math.max(1,q.parts.length),0),courses=pCourses(ws,we),H=Math.max(1900,1650+rows*96+courses.length*112),[c,x]=cvs(W,H),T=THC();paintBg(x,W,H,T);pHeader(x,'گزارش هفتگی',fj(ws,1)+' تا '+fj(we,1),W,T);pCard(x,72,330,W-144,250,T,.09);tx(x,fh(tot),W-112,460,{s:104,w:800,c:T.fg});tx(x,'مجموع ساعت مطالعه در این هفته',W-112,515,{s:28,c:T.mu});pBar(x,112,550,W-224,13,Math.min(1,tot/(Math.max(1,...days.map(q=>q.v))*7)),T.ac,T);const active=days.filter(q=>q.v>0).length,avg=active?tot/active:0,idx=analyticsAverage(ws,we);pMetric(x,72,620,292,fa(active)+' روز','روزهای فعال',T);pMetric(x,394,620,292,fh(avg)+' ساعت','میانگین روز فعال',T);pMetric(x,716,620,292,idx==null?'—':fa(Math.round(idx))+'٪','میانگین بازدهی',T);let y=830;tx(x,'برنامه‌ی کامل هفته',W-72,y,{s:40,w:800,c:T.fg});y+=42;days.forEach(q=>{pCard(x,72,y,W-144,62,T,.09);tx(x,DAYS[wd(q.d)]+' · '+fj(q.d,1),W-105,y+39,{s:27,w:800,c:T.fg});tx(x,fh(q.v)+' ساعت مطالعه',105,y+39,{s:22,w:600,c:T.mu,a:'left'});y+=72;if(!q.parts.length){y=posterEmpty(x,y,W,T,'پارتی برای این روز تعریف نشده است.');return}q.parts.forEach((p,i)=>{const q0=asg(q.d,p),dn=doneLog(q.d,p.id),tp=q0?T_(q0.c,q0.tp):null;posterRow(x,y,fa(i+1)+'. '+p.name,ftime(p.s)+' تا '+ftime(p.e),W,T,(q0?cname(q0.c)+(tp?' · '+tp.name:''):'پارت خالی')+(dn?' · تکمیل‌شده':''));y+=88});y+=8});tx(x,'سهم درس‌ها در هفته',W-72,y+8,{s:36,w:800,c:T.fg});y=pCourseRows(x,courses,y+48,W,T,Math.max(1,courses.length));pFooter(x,W,H,T);showImage(c,'study-week-'+ws+'.png')}
 async function makeMonth(y,m){await fontsReady();const W=1080,n=jml(y,m),a=isoJ(y,m,1),b=isoJ(y,m,n),tot=monthMin(y,m),days=Array.from({length:n},(_,i)=>minOn(isoJ(y,m,i+1))),idx=analyticsAverage(a,b),act=days.filter(v=>v>0).length,courses=pCourses(a,b),off=wd(a),weeks=Math.ceil((off+n)/7),H=1500+weeks*116+courses.length*65,[c,x]=cvs(W,H),T=THC();paintBg(x,W,H,T);pHeader(x,'کارنامه‌ی ماهانه',MONTHS[m-1]+' '+fa(y),W,T);pCard(x,72,330,W-144,250,T,.09);tx(x,fh(tot),W-112,460,{s:104,w:800,c:T.fg});tx(x,'ساعت مطالعه در این ماه',W-112,515,{s:28,c:T.mu});pBar(x,112,550,W-224,13,idx==null?0:idx/100,T.ac,T);pMetric(x,72,620,292,fa(act)+' روز','روزهای دارای مطالعه',T);pMetric(x,394,620,292,idx==null?'—':fa(Math.round(idx))+'٪','میانگین بازدهی',T);pMetric(x,716,620,292,fa(Math.round(days.reduce((a,v)=>a+v,0)/Math.max(1,n)))+' دقیقه','میانگین مطالعهٔ روزانه',T);tx(x,'تقویم فعالیت ماه',W-72,860,{s:40,w:800,c:T.fg});const cell=120,gap=8,left=72,top=920,ch=94;DS.forEach((s,i)=>tx(x,s,left+i*(cell+gap)+cell/2,top-20,{s:22,w:600,c:T.mu,a:'center'}));for(let d=1;d<=n;d++){const dt=isoJ(y,m,d),v=minOn(dt),lv=gm?Math.min(1,v/gm):v?1:0,k=off+d-1,col=k%7,row=~~(k/7),px=left+col*(cell+gap),py=top+row*(ch+gap);rr(x,px,py,cell,ch,18);x.fillStyle=v?hexA(T.ac,.14+.72*lv):hexA(T.fg,.055);x.fill();if(dt===today()){x.lineWidth=3;x.strokeStyle=T.fg;x.stroke()}tx(x,fa(d),px+cell/2,py+39,{s:31,w:700,c:T.fg,a:'center'});tx(x,v?fh(v):'—',px+cell/2,py+70,{s:20,c:T.mu,a:'center'});const pp=planOn(dt);if(pp)tx(x,'برنامه '+fh(pp)+'س',px+cell/2,py+88,{s:13,c:T.mu,a:'center'})}const py=top+weeks*(ch+gap)+32;tx(x,'درس‌های این ماه',W-72,py,{s:38,w:800,c:T.fg});pCourseRows(x,courses,py+48,W,T,Math.max(1,courses.length));pFooter(x,W,H,T);showImage(c,'study-month-'+y+'-'+p2(m)+'.png')}
