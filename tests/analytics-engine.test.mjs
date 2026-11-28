@@ -85,7 +85,12 @@ assert.match(app,/S\.activeTimer\.elapsedSec=timerSeconds\(\);S\.activeTimer\.ru
 const css=await readFile(new URL('../analytics.css',import.meta.url),'utf8');
 assert.match(css,/\.an-wrap/,'Glass dashboard styles exist');
 const sw=await readFile(new URL('../sw.js',import.meta.url),'utf8');
-assert.match(sw,/const CACHE='planner-pwa-v40'/,'Service worker cache is bumped for the current UI and scoring fixes');
+assert.match(sw,/const CACHE='planner-pwa-v45'/,'Service worker cache is bumped for the current UI and scoring fixes');
+assert.match(sw,/tehran-animated\\.svg/,'Service worker caches the animated Tehran poster asset');
+assert.match(views,/function tehranPoster\(\)/,'Home includes the Tehran goal poster');
+const quoteList=views.match(/const TEHRAN_QUOTES=\\[([\\s\\S]*?)\\];/);
+assert.ok(quoteList,'Tehran motivation quote list exists');
+assert.equal((quoteList[1].match(/^'/gm)||[]).length,50,'Tehran poster includes 50 distinct quotes');
 assert.match(sw,/status:503/,'Missing offline static assets return an error instead of the app shell');
 assert.match(sw,/analytics-engine\.js/,'Service worker caches the engine');
 assert.match(sw,/app-core\.js/,'Service worker caches the app core');
