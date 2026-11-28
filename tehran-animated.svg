@@ -1,82 +1,75 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="نمای سینمایی و متحرک تهران با برج میلاد">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="نمای شبانه تهران و برج میلاد">
 <defs>
- <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#071426"/><stop offset=".52" stop-color="#17304d"/><stop offset=".82" stop-color="#765b62"/><stop offset="1" stop-color="#e2a36f"/></linearGradient>
- <radialGradient id="horizon"><stop stop-color="#f5bc83" stop-opacity=".7"/><stop offset="1" stop-color="#e9a16c" stop-opacity="0"/></radialGradient>
- <linearGradient id="ridge" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#53647a"/><stop offset="1" stop-color="#182b42"/></linearGradient>
- <linearGradient id="tower" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#8294a7"/><stop offset=".48" stop-color="#e2e5e5"/><stop offset="1" stop-color="#5c7088"/></linearGradient>
- <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f8d4a4"/><stop offset=".35" stop-color="#8299ac"/><stop offset="1" stop-color="#263e56"/></linearGradient>
- <linearGradient id="city" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#23384f"/><stop offset="1" stop-color="#081525"/></linearGradient>
- <filter id="blur"><feGaussianBlur stdDeviation="16"/></filter>
- <filter id="soft"><feGaussianBlur stdDeviation="4"/></filter>
- <pattern id="windows" width="20" height="23" patternUnits="userSpaceOnUse"><rect x="4" y="5" width="4" height="7" rx="1" fill="#f6c98d" opacity=".8"/><rect x="12" y="5" width="4" height="7" rx="1" fill="#b8d0df" opacity=".35"/></pattern>
+ <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#07172d"/><stop offset=".58" stop-color="#263b59"/><stop offset="1" stop-color="#d18b70"/></linearGradient>
+ <linearGradient id="mountain" x2="0" y2="1"><stop stop-color="#8290a1"/><stop offset=".45" stop-color="#465a70"/><stop offset="1" stop-color="#1a2c43"/></linearGradient>
+ <linearGradient id="tower" x2="1" y2="0"><stop stop-color="#63798d"/><stop offset=".42" stop-color="#e0e4e4"/><stop offset=".63" stop-color="#f5e8d1"/><stop offset="1" stop-color="#667d92"/></linearGradient>
+ <linearGradient id="pod" x2="0" y2="1"><stop stop-color="#f0e7d7"/><stop offset=".24" stop-color="#9bafbc"/><stop offset=".55" stop-color="#405c75"/><stop offset=".8" stop-color="#d7dce0"/><stop offset="1" stop-color="#647d91"/></linearGradient>
+ <linearGradient id="building" x2="0" y2="1"><stop stop-color="#40566e"/><stop offset="1" stop-color="#0a1b30"/></linearGradient>
+ <radialGradient id="sunset"><stop stop-color="#f4b27d" stop-opacity=".7"/><stop offset="1" stop-color="#f4b27d" stop-opacity="0"/></radialGradient>
+ <pattern id="lit" width="17" height="22" patternUnits="userSpaceOnUse"><rect x="4" y="5" width="4" height="7" rx=".6" fill="#ffd39a" opacity=".9"/><rect x="11" y="5" width="3" height="7" rx=".5" fill="#b9d1df" opacity=".45"/></pattern>
+ <pattern id="dim" width="19" height="24" patternUnits="userSpaceOnUse"><rect x="4" y="5" width="4" height="8" fill="#e6b887" opacity=".55"/><rect x="12" y="5" width="3" height="8" fill="#9cb5c9" opacity=".28"/></pattern>
+ <filter id="glow"><feGaussianBlur stdDeviation="10"/></filter>
 </defs>
 <rect width="960" height="540" fill="url(#sky)"/>
-<ellipse cx="495" cy="398" rx="390" ry="125" fill="url(#horizon)" filter="url(#blur)" opacity=".65"/>
-<g fill="#d5e4ef">
- <circle cx="83" cy="65" r="1.8" opacity=".8"><animate attributeName="opacity" values=".25;.9;.25" dur="4.2s" repeatCount="indefinite"/></circle>
- <circle cx="186" cy="105" r="1.4" opacity=".7"><animate attributeName="opacity" values=".8;.2;.8" dur="5s" repeatCount="indefinite"/></circle>
- <circle cx="328" cy="49" r="1.6" opacity=".6"><animate attributeName="opacity" values=".2;.85;.2" dur="3.8s" repeatCount="indefinite"/></circle>
- <circle cx="554" cy="81" r="1.6" opacity=".65"><animate attributeName="opacity" values=".8;.25;.8" dur="4.8s" repeatCount="indefinite"/></circle>
- <circle cx="820" cy="55" r="1.4" opacity=".8"><animate attributeName="opacity" values=".25;.95;.25" dur="5.5s" repeatCount="indefinite"/></circle>
- <circle cx="902" cy="130" r="1.5" opacity=".6"><animate attributeName="opacity" values=".75;.2;.75" dur="4.3s" repeatCount="indefinite"/></circle>
+<ellipse cx="540" cy="355" rx="470" ry="150" fill="url(#sunset)" opacity=".75"/>
+<!-- stars -->
+<g fill="#e6e9e9" opacity=".6">
+ <circle cx="86" cy="68" r="1.3"/><circle cx="178" cy="104" r="1"/><circle cx="305" cy="53" r="1.4"/><circle cx="493" cy="87" r="1"/><circle cx="824" cy="64" r="1.2"/><circle cx="911" cy="126" r="1"/>
 </g>
-<circle cx="170" cy="150" r="75" fill="#f4c18e" opacity=".13" filter="url(#blur)"/>
-<g fill="#b9c7d3" opacity=".18">
- <path d="M-40 158c35-25 66-18 86 0 22-25 64-20 79 3 34-4 48 15 45 32H-40Z"/>
- <path d="M-60 204c35-22 69-15 85 5 23-21 59-17 74 5 30-4 47 13 43 27H-60Z"/>
- <animateTransform attributeName="transform" type="translate" values="-55 0;80 -3;-55 0" dur="38s" repeatCount="indefinite"/>
+<!-- moving thin clouds -->
+<g fill="#c6cbd0" opacity=".16"><path d="M-60 156q50-35 96-5 39-40 83-4 43-2 54 26H-60Z"/><path d="M610 133q42-29 78 1 38-34 75-2 36-1 49 23H610Z"/><animateTransform attributeName="transform" type="translate" values="-25 0;28 -2;-25 0" dur="52s" repeatCount="indefinite"/></g>
+<!-- Alborz mountains, with the recognizable high snow ridge -->
+<path d="M0 344 62 306 112 318 174 257 216 286 264 236 309 278 365 217 410 266 458 208 498 251 541 187 574 224 611 197 656 260 702 221 753 275 801 239 847 282 907 245 960 282V420H0Z" fill="#52657a" opacity=".62"/>
+<path d="m0 346 62-40 28 13 28-12 56-50 25 26 30-18 35-29 29 31 39-24 35-26 29 32 44-43 22 31 29-19 40-46 28 33 18-9 32 43 30-24 24 30 34-18 29 30 40-18 34 32 43-22 54 35 48-14 47 38v120H0Z" fill="url(#mountain)"/>
+<!-- snow caps on high Alborz peaks -->
+<g fill="#d9e1e4" opacity=".75"><path d="m235 266 29-30 27 29-17-8-10 8-8-5-9 8Z"/><path d="m338 247 27-30 27 34-17-9-9 8-10-7-8 8Z"/><path d="m432 238 26-30 24 30-15-7-8 7-9-5-8 7Z"/><path d="m521 216 20-29 26 38-17-12-8 8-9-7-6 6Z"/><path d="m593 224 18-27 22 33-15-9-8 6-8-6Z"/></g>
+<path d="M0 372q150-45 290-20t270-5q180-28 400 20v100H0Z" fill="#26394f" opacity=".9"/>
+<!-- distant Tehran urban fabric -->
+<g fill="#1b3047">
+ <path d="M0 398v-55h26v55h17v-72h24v72h15v-48h34v48h18v-86h27v86h16v-58h26v58h17v-70h32v70h18v-44h29v44h15v-88h31v88h17v-60h28v60h18v-77h34v77h18v-51h26v51h17v-92h29v92h18v-57h30v57h17v-72h34v72h18v-50h26v50h17v-84h29v84h18v-61h32v61h17v-48h28v48h20v-72h31v72h18v-52h27v52h18v-67h28v67h15v-43h25v43h20v-77h30v77h15v-54h30v54h20v-70h30v70h20v-48h30v48h20v-60h30v60h10v142H0Z"/>
 </g>
-<g fill="#d4dce2" opacity=".12">
- <path d="M610 138c25-18 53-12 66 5 20-18 50-15 62 4 25-3 38 10 35 22H610Z"/>
- <path d="M720 188c22-16 48-12 61 4 18-15 43-11 55 5 22-2 34 9 31 20H720Z"/>
- <animateTransform attributeName="transform" type="translate" values="60 0;-75 2;60 0" dur="46s" repeatCount="indefinite"/>
+<!-- varied mid-rise buildings -->
+<g fill="url(#building)">
+ <path d="M0 443v-67h49v67h15v-93h56v93h17v-58h43v58h17v-106h58v106h19v-73h42v73h18v-116h55v116h18v-83h47v83h17v-102h55v102h18v-66h42v66h17v-111h57v111h18v-80h46v80h18v-100h55v100h18v-69h45v69h20v-91h51v91h17v-72h49v72h20v-110h54v110h18v-80h44v80h20v-62h45v62h20v-92h55v92h10v97H0Z"/>
 </g>
-<path d="M0 345 72 284 113 305 178 240 226 285 276 250 335 300 402 244 463 291 514 237 575 285 624 249 681 297 733 240 799 289 850 254 960 326V440H0Z" fill="url(#ridge)" opacity=".7"/>
-<path d="M0 366 104 315 174 340 257 285 328 333 414 292 499 336 585 291 668 335 750 286 836 330 960 293V455H0Z" fill="#24374e" opacity=".7"/>
-<path d="M0 389 112 351 204 371 290 327 386 372 482 340 563 379 657 332 751 370 859 338 960 371V475H0Z" fill="#162b42" opacity=".88"/>
-<g opacity=".7">
- <path d="M0 405 130 376 250 392 365 370 486 399 605 366 732 394 858 370 960 389" fill="none" stroke="#9aaab9" stroke-opacity=".2" stroke-width="2"/>
+<g opacity=".8" fill="url(#lit)">
+ <path d="M0 443v-67h49v67h15v-93h56v93h17v-58h43v58h17v-106h58v106h19v-73h42v73h18v-116h55v116h18v-83h47v83h17v-102h55v102h18v-66h42v66h17v-111h57v111h18v-80h46v80h18v-100h55v100h18v-69h45v69h20v-91h51v91h17v-72h49v72h20v-110h54v110h18v-80h44v80h20v-62h45v62h20v-92h55v92h10v97H0Z"/>
 </g>
-<!-- distant city -->
-<g fill="#14283d">
- <path d="M0 394h35v-52h33v52h12v-68h26v68h20v-44h28v44h16v-87h33v87h15v-55h35v55h18v-72h27v72h15v-46h30v46h18v-81h29v81h20v-56h29v56h20v-92h30v92h18v-52h32v52h20v-73h28v73h18v-48h28v48h20v-63h34v63h18v-49h36v49h16v-80h33v80h17v-55h30v55h18v-72h33v72h20v-47h32v47h20v-65h28v65h18v-53h34v53h10v140H0Z"/>
+<!-- Milad Tower: slender shaft, broad multi-storey pod, upper crown and antenna -->
+<g id="milad-tower">
+ <ellipse cx="694" cy="457" rx="47" ry="12" fill="#f4b77f" opacity=".22" filter="url(#glow)"/>
+ <!-- tapered concrete shaft -->
+ <path d="M687 465 691 244 697 244 702 465Z" fill="url(#tower)" stroke="#dce1e2" stroke-opacity=".45" stroke-width="1"/>
+ <path d="M692 255 695 255 699 463 694 463Z" fill="#fff1d9" opacity=".25"/>
+ <!-- lower neck and support collar -->
+ <path d="M687 249 690 230 698 230 702 249 697 261 692 261Z" fill="#a7b6c0" stroke="#e0e5e5" stroke-width="1"/>
+ <!-- main pod, wider at top with faceted sides -->
+ <path d="M676 230 666 215 668 195 679 180 693 174 708 180 720 195 722 215 711 230 703 237 685 237Z" fill="url(#pod)" stroke="#e1e6e7" stroke-width="1.5"/>
+ <path d="M666 205Q694 193 722 205L720 214Q694 226 668 214Z" fill="#2b465f" opacity=".88"/>
+ <path d="M670 192Q694 179 718 192L722 199Q694 211 666 199Z" fill="#cbd5d9" opacity=".72"/>
+ <path d="M674 218Q694 230 714 218L709 229Q694 237 679 229Z" fill="#dce1e1" opacity=".82"/>
+ <path d="M674 195 681 183 685 231M714 195 707 183 703 231" fill="none" stroke="#f6e7d0" stroke-opacity=".55" stroke-width="1.5"/>
+ <!-- observation decks / horizontal rings -->
+ <path d="M665 199Q694 184 723 199M667 214Q694 229 721 214M676 230Q694 238 712 230" fill="none" stroke="#f4ead9" stroke-width="2"/>
+ <!-- antenna mast -->
+ <path d="M691 177 692 104 694 51 696 104 697 177Z" fill="url(#tower)" stroke="#d8e0e2" stroke-width=".8"/>
+ <path d="M694 52 694 25" stroke="#e9e6dc" stroke-width="1.5"/>
+ <circle cx="694" cy="25" r="2.7" fill="#ffd29b"><animate attributeName="opacity" values=".45;1;.45" dur="3.2s" repeatCount="indefinite"/></circle>
+ <circle cx="694" cy="25" r="9" fill="#ffc27f" opacity=".2" filter="url(#glow)"/>
+ <!-- shaft lights -->
+ <g fill="#f7c58d"><circle cx="692" cy="275" r="1.4"/><circle cx="696" cy="319" r="1.2"/><circle cx="693" cy="367" r="1.2"/><circle cx="698" cy="411" r="1.3"/></g>
 </g>
-<g fill="url(#windows)" opacity=".58">
- <path d="M0 355h35v-13h33v13h12v-29h26v29h20v-5h28v5h16v-48h33v48h15v-16h35v16h18v-33h27v33h15v-7h30v7h18v-42h29v42h20v-17h29v17h20v-53h30v53h18v-13h32v13h20v-34h28v34h18v-9h28v9h20v-24h34v24h18v-10h36v10h16v-41h33v41h17v-16h30v16h18v-33h33v33h20v-8h32v8h20v-26h28v26h18v-14h34v14h10v170H0Z"/>
- </g>
-<!-- Milad Tower -->
-<g id="milad">
- <ellipse cx="694" cy="446" rx="43" ry="12" fill="#f0b779" opacity=".28" filter="url(#soft)"/>
- <path d="M679 473 691 259 696 259 709 473Z" fill="url(#tower)" stroke="#d4dce0" stroke-opacity=".38" stroke-width="1.5"/>
- <path d="M691 270 696 270 701 473 694 473Z" fill="#f8e4c5" opacity=".22"/>
- <path d="M672 261Q693 246 715 261L712 279Q693 290 675 279Z" fill="url(#glass)" stroke="#d9e3e9" stroke-width="2"/>
- <path d="M665 261Q693 249 722 261L718 268Q693 279 669 268Z" fill="#d3e0e8" stroke="#edf2f3" stroke-width="1.5"/>
- <path d="M677 278Q693 286 710 278L707 289Q693 298 680 289Z" fill="#6f879c" stroke="#e1e6e8" stroke-width="1"/>
- <path d="M683 250 688 233 699 233 705 250Z" fill="#73879b"/>
- <path d="M687 233 690 198 697 198 700 233Z" fill="url(#tower)"/>
- <path d="M691 198 692 116 695 116 697 198Z" fill="#d6e0e7"/>
- <path d="M692 120 694 91 696 120Z" fill="#dce5ea"/>
- <circle cx="694" cy="94" r="5" fill="#f4b982"><animate attributeName="opacity" values=".35;1;.35" dur="2.4s" repeatCount="indefinite"/></circle>
- <circle cx="694" cy="94" r="13" fill="#f2b67b" opacity=".22" filter="url(#soft)"><animate attributeName="opacity" values=".1;.5;.1" dur="2.4s" repeatCount="indefinite"/></circle>
- <path d="M681 297 681 462M706 297 706 462" stroke="#f2d6b4" stroke-opacity=".22" stroke-width="1.2"/>
- <path d="M688 305 694 468" stroke="#ffffff" stroke-opacity=".25"/>
- <g stroke="#f4bc84" stroke-width="2" opacity=".55"><path d="M692 189h5M692 224h5M689 263h10"/></g>
- <ellipse cx="694" cy="270" rx="47" ry="29" fill="none" stroke="#f8c48a" stroke-opacity=".14"><animate attributeName="opacity" values=".15;.5;.15" dur="5s" repeatCount="indefinite"/></ellipse>
+<!-- foreground buildings, irregular rooflines and balconies -->
+<g fill="#0b1b2e">
+ <path d="M0 474v-64h38v64h15v-87h57v87h18v-55h42v55h15v-97h61v97h17v-72h45v72h17v-105h58v105h18v-76h45v76h16v-91h61v91h18v-65h43v65h18v-106h60v106h17v-72h45v72h18v-91h58v91h17v-60h48v60h18v-86h57v86h16v-67h47v67h20v-100h57v100h20v-73h50v73h10v66H0Z"/>
 </g>
-<!-- foreground skyline -->
-<g fill="url(#city)">
- <path d="M0 446h43v-62h46v62h20v-94h50v94h18v-50h42v50h16v-78h57v78h21v-57h42v57h18v-116h54v116h16v-66h42v66h18v-91h51v91h18v-54h42v54h17v-76h52v76h16v-113h56v113h18v-55h40v55h16v-84h55v84h22v-58h44v58h27v95H0Z"/>
+<g opacity=".88" fill="url(#dim)">
+ <path d="M0 474v-64h38v64h15v-87h57v87h18v-55h42v55h15v-97h61v97h17v-72h45v72h17v-105h58v105h18v-76h45v76h16v-91h61v91h18v-65h43v65h18v-106h60v106h17v-72h45v72h18v-91h58v91h17v-60h48v60h18v-86h57v86h16v-67h47v67h20v-100h57v100h20v-73h50v73h10v66H0Z"/>
 </g>
-<g fill="url(#windows)" opacity=".9">
- <path d="M0 446h43v-62h46v62h20v-94h50v94h18v-50h42v50h16v-78h57v78h21v-57h42v57h18v-116h54v116h16v-66h42v66h18v-91h51v91h18v-54h42v54h17v-76h52v76h16v-113h56v113h18v-55h40v55h16v-84h55v84h22v-58h44v58h27v95H0Z"/>
- </g>
-<g fill="#0a192a">
- <path d="M0 475h960v65H0Z"/>
-</g>
-<!-- moving traffic and window glints -->
-<g stroke-linecap="round" fill="none">
- <path d="M42 488h176M301 506h210M616 489h123M790 512h115" stroke="#f6c38c" stroke-width="2.5" opacity=".48" stroke-dasharray="26 46"><animate attributeName="stroke-dashoffset" from="0" to="-144" dur="5s" repeatCount="indefinite"/></path>
- <path d="M140 518h118M468 493h90M704 522h170" stroke="#9cc7e7" stroke-width="1.6" opacity=".45" stroke-dasharray="18 40"><animate attributeName="stroke-dashoffset" from="0" to="116" dur="6s" repeatCount="indefinite"/></path>
-</g>
-<rect width="960" height="540" fill="none" stroke="#f3d2a6" stroke-opacity=".13" stroke-width="2"/>
+<!-- curved Tehran expressway and moving light trails -->
+<path d="M-30 539Q190 488 365 519T690 520Q824 518 990 446" fill="none" stroke="#071322" stroke-width="42" opacity=".9"/>
+<path d="M-30 528Q190 477 365 508T690 509Q824 507 990 435" fill="none" stroke="#a7b5bf" stroke-opacity=".35" stroke-width="1.5"/>
+<path d="M-20 526Q180 484 363 513T690 514Q824 512 985 443" fill="none" stroke="#f9c18a" stroke-width="2.5" stroke-dasharray="20 42" opacity=".85"><animate attributeName="stroke-dashoffset" from="0" to="-124" dur="4.8s" repeatCount="indefinite"/></path>
+<path d="M-20 544Q190 500 364 530T690 531Q824 529 985 460" fill="none" stroke="#d5e6ef" stroke-width="1.8" stroke-dasharray="12 48" opacity=".65"><animate attributeName="stroke-dashoffset" from="0" to="130" dur="5.6s" repeatCount="indefinite"/></path>
+<rect width="960" height="540" fill="none" stroke="#f1d1ad" stroke-opacity=".12" stroke-width="2"/>
 </svg>
