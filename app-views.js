@@ -1,6 +1,70 @@
-function homeV(){const t=today(),dw=wd(t),m=minOn(t),score=analyticsDay(t),sp=score.status==='scored'?score.score:null,[jy,jm,jd]=J(t),nm=nowMin(),ps=dayParts(t),cur=ps.find(x=>nm>=x.s&&nm<x.e&&asg(t,x)),nx=ps.find(x=>x.s>nm&&asg(t,x)),w=weakest();
-const st=cur?`اکنون: <b>${esc(cname(asg(t,cur).c))}</b> تا ساعت ${ftime(cur.e)}`:nx?`بعدی: <b>${esc(cname(asg(t,nx).c))}</b> ساعت ${ftime(nx.s)}`:ps.some(x=>asg(t,x))?'پارت‌های امروز تمام شد.':'برای امروز درسی نچیده‌ای.';
-let h=`<div class=hero><div class=grow><div class=hs>${DAYS[dw]}</div><div class=hd>${fa(jd)} ${MONTHS[jm-1]}</div><div class=hs>${fa(jy)}</div></div><div class=hrg>${ring(sp==null?0:sp/100,sp==null?'—':fa(Math.round(sp))+'٪')}<div class=hs>بازدهی روزانه</div><div class=hs>${fh(m)} مطالعهٔ ثبت‌شده</div></div></div><div class=stat>${st}<div class="muted sm" style="margin-top:4px">${sp==null?'با ثبت برنامه و زمان مطالعه، شاخص امروز محاسبه می‌شود.':'امتیاز بر اساس زمان، اجرای پارت‌ها و نظم زمانی محاسبه شده است.'}</div></div>`;
+const TEHRAN_QUOTES=[
+'تهران هدفمه؛ باید برای رسیدن بهش تلاش کنم.',
+'دو سال دیگه می‌خوام زندگی تازه‌ای رو تو تهران شروع کنم.',
+'فعلاً سهم من از تهران، همین ساعت‌های درس خوندنه.',
+'یه روزی قراره این مسیر طولانی تموم بشه.',
+'دلم می‌خواد دو سال دیگه از تصمیم‌های امروز خودم راضی باشم.',
+'دانشگاه خوب تهران اتفاقی به دست نمیاد؛ باید براش وقت بذارم.',
+'هنوز خیلی مونده، ولی بالاخره باید از یه جایی شروع کرد.',
+'من تهران رو می‌خوام؛ نه فقط توی خیال، واقعاً.',
+'هر پارت یه قدم کوچیکه به سمت همون چیزی که می‌خوام.',
+'کاش یه روز برگردم این روزها رو ببینم و بگم ارزشش رو داشت.',
+'فعلاً باید حواسم به هدفم باشه، حواس‌پرتی‌ها بعداً.',
+'یه روزی از همین خیابون‌های تهران رد می‌شم و می‌دونم برای رسیدن بهش چقدر زحمت کشیدم.',
+'قرار نیست همیشه راحت باشه؛ مهم اینه که ادامه بدم.',
+'دلم می‌خواد آینده‌م رو همون‌جوری بسازم که تو ذهنمه.',
+'تهران هنوز دوره، ولی منم قرار نیست دست روی دست بذارم.',
+'امروز رو جدی بگیر؛ دو سال دیگه بهش احتیاج داری.',
+'این همه آرزو دارم که حیفه براشون تلاش نکنم.',
+'یه دانشگاه خوب تو تهران؛ هدفی که ارزش این همه تلاش رو داره.',
+'فعلاً باید به قولی که به خودم دادم پایبند بمونم.',
+'شاید روزهای الان معمولی باشن، ولی قراره منو به روزهای خاصی برسونن.',
+'دلم یه شروع تازه تو تهران می‌خواد.',
+'یه روزی این مسیر از خاطرات خوبم می‌شه.',
+'لازم نیست هر روز فوق‌العاده باشم؛ فقط باید کارم رو انجام بدم.',
+'تهران منتظر من نیست؛ این منم که باید خودم رو بهش برسونم.',
+'دو سال دیگه می‌خوام نتیجهٔ این روزها رو ببینم.',
+'هر بار که حوصله ندارم ولی شروع می‌کنم، یه قدم جلوترم.',
+'هدفم رو یادم نره؛ بقیه چیزها رو می‌شه مدیریت کرد.',
+'یه روزی روپوش سفیدم رو توی دانشگاهی تو تهران می‌پوشم.',
+'فعلاً وقت ساختن آینده‌ست، نه فقط فکر کردن بهش.',
+'می‌دونم چی می‌خوام؛ حالا باید براش تلاش کنم.',
+'کاش زودتر برسه اون روزی که با خیال راحت به این روزها فکر کنم.',
+'هنوز فرصت دارم؛ باید ازش درست استفاده کنم.',
+'یه زندگی تو تهران هست که دلم می‌خواد تجربه‌ش کنم.',
+'امروز شاید فقط چند ساعت درس باشه، ولی برای من معنی بیشتری داره.',
+'قرار نیست مسیرم رو با سرعت بقیه مقایسه کنم.',
+'من برای یه هدف مشخص دارم این روزها رو می‌گذرونم.',
+'دلم می‌خواد وقتی به تهران رسیدم، بدونم کم نذاشتم.',
+'یه روزی این همه تست و کتاب و برنامه‌ریزی تموم می‌شه.',
+'هدفم هنوز همونه؛ دندان‌پزشکی تهران.',
+'حتی اگه امروز خوب پیش نرفت، فردا دوباره شروع می‌کنم.',
+'بعضی چیزها ارزش دو سال صبر و تلاش رو دارن.',
+'می‌خوام به جایی برسم که الان فقط تصورش می‌کنم.',
+'فعلاً باید روی چیزی تمرکز کنم که دست خودمه.',
+'یه روزی این مسیر سخت، بخشی از داستان رسیدنم می‌شه.',
+'تهران رو برای خودم می‌خوام؛ برای آینده‌ای که انتخابش کردم.',
+'هر روز لازم نیست انگیزه داشته باشم؛ گاهی فقط باید شروع کنم.',
+'هنوز به اون روز نرسیدم، ولی دارم بهش نزدیک می‌شم.',
+'می‌خوام دو سال دیگه بگم: خوب شد که تسلیم نشدم.',
+'یه قرار قشنگ برای بعد کنکور دارم؛ فعلاً باید به هدفم برسم.',
+'این فقط کنکور نیست؛ شروع زندگی‌ایه که می‌خوام برای خودم بسازم.'
+];
+let TEHRAN_ACTIVE_QUOTE=TEHRAN_QUOTES[0],TEHRAN_LAST_VIEW=null;
+function selectTehranQuote(){
+ const key='planner.tehran-quotes.v1';let state={remaining:[],last:-1};
+ try{const raw=localStorage.getItem(key);if(raw){const parsed=JSON.parse(raw);if(parsed&&Array.isArray(parsed.remaining))state=parsed}}catch(e){}
+ let remaining=state.remaining.filter(i=>Number.isInteger(i)&&i>=0&&i<TEHRAN_QUOTES.length);
+ if(!remaining.length)remaining=Array.from({length:TEHRAN_QUOTES.length},(_,i)=>i);
+ let pos=Math.floor(Math.random()*remaining.length);
+ if(remaining.length===TEHRAN_QUOTES.length&&Number.isInteger(state.last)&&remaining[pos]===state.last)pos=(pos+1)%remaining.length;
+ const selected=remaining.splice(pos,1)[0];
+ TEHRAN_ACTIVE_QUOTE=TEHRAN_QUOTES[selected];
+ try{localStorage.setItem(key,JSON.stringify({remaining,last:selected}))}catch(e){}
+}
+function tehranPoster(){return `<section class="tehran-poster" aria-label="تهران؛ هدف من"><img class="tehran-poster-bg" src="/tehran-loop.gif" alt="نمای متحرک تهران و برج میلاد در غروب و شب" loading="eager" decoding="async"><div class="tehran-poster-copy"><div class="tehran-poster-kicker" dir="ltr">TEHRAN IS THE GOAL</div><div class="tehran-poster-quote">${esc(TEHRAN_ACTIVE_QUOTE)}</div><div class="tehran-poster-footer">دندان‌پزشکی • تهران</div></div></section>`;}
+function homeV(){const t=today(),dw=wd(t),m=minOn(t),score=analyticsDay(t),sp=score.status==='scored'?score.score:null,[jy,jm,jd]=J(t),w=weakest();
+let h=`<div class=hero><div class=grow><div class=hs>${DAYS[dw]}</div><div class=hd>${fa(jd)} ${MONTHS[jm-1]}</div><div class=hs>${fa(jy)}</div></div><div class=hrg>${ring(sp==null?0:sp/100,sp==null?'—':fa(Math.round(sp))+'٪')}<div class=hs>بازدهی روزانه</div><div class=hs>${fh(m)} مطالعهٔ ثبت‌شده</div></div></div>${tehranPoster()}`;
 const yd=addD(t,-1),ovr=dayParts(yd).filter(p=>asg(yd,p)&&!doneLog(yd,p.id)),fr=dayParts(t).filter(p=>!asg(t,p)).length;
 if(ovr.length&&fr)h+=`<div class="card row"><div class=grow><b>${fa(ovr.length)} پارت دیروز انجام نشده</b><div class="muted sm">به پارت‌های خالی امروز منتقل شوند؟</div></div><button class="btn p" data-a=moveOver>انتقال به امروز</button></div>`;
 h+=startCard();h+=dayRing(t);h+='<div class="home-actions"><button class="btn p" data-a=quickStart>▶ شروع مطالعه</button><button class=btn data-a=emergencyOpen>شرایط اضطراری</button><button class=btn data-a=freeStudyOpen>مطالعهٔ آزاد</button><button class=btn data-a=go data-v=plan>برنامه‌ریزی</button><button class=btn data-a=deskOpen>حالت رومیزی</button></div>';
@@ -296,7 +360,7 @@ const goalHit=b=>{};
 function quote(p,m){const h=new Date().getHours();if(p>=1)return'🎉 هدف امروز کامل شد؛ فوق‌العاده‌ای!';if(p>=.6)return'🔥 نزدیکی؛ یک پارت دیگر و تمام.';if(m>0)return'✨ شروع کرده‌ای؛ ادامه بده، سخت‌ترین بخشش گذشته.';return h<12?'☀️ صبح بخیر! اولین پارت را همین الان شروع کن.':h<18?'📚 هنوز وقت داری؛ یک پارت کوتاه هم می‌ارزد.':'🌙 حتی ۲۰ دقیقه امشب فرق می‌کند.'}
 function miniBar(){const t=S.activeTimer;if(!t||TSCREEN)return'';const p=findPart(t.part),a=p&&asg(t.date,p);return`<div class=mini style="--c:${a?ccol(a.c):'var(--accent)'}"><div class=mb data-a=timerOpen><b>${a?cic(a.c)+' ':''}${esc(timerCourse())}</b><span class=mc2 id=miniClock>${clockText(timerSeconds())}</span></div><button class=mt data-a=timerToggle aria-label="شروع یا توقف">${t.running?'❚❚':'▶'}</button><button class=mx data-a=timerCancel aria-label="لغو">✕</button></div>`}
 
-function render(){const r=document.documentElement;S.theme=='auto'?r.removeAttribute('data-ptheme'):r.setAttribute('data-ptheme',S.theme);
+function render(){if(V==='home'&&TEHRAN_LAST_VIEW!=='home')selectTehranQuote();TEHRAN_LAST_VIEW=V;const r=document.documentElement;S.theme=='auto'?r.removeAttribute('data-ptheme'):r.setAttribute('data-ptheme',S.theme);
 if(TSCREEN&&!(S.activeTimer||TIMER_DRAFT))TSCREEN=false;
 if(DESK&&!TSCREEN){$('#app').innerHTML=deskV();fxSync();deskTick();wake();return}
 if(TSCREEN){$('#app').innerHTML=timerScreenV();timerUpdate();wake();fxSync();return}
